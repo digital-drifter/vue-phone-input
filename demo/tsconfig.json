@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./demo"
+  },
+  "include": [
+    "node_modules/libphonenumber-js/metadata.full.json",
+    "./**/*.ts",
+    "./**/*.vue"
+  ]
+}

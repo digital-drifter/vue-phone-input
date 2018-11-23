@@ -1,5 +1,5 @@
 import Vue, { CreateElement, VNode } from 'vue'
-import clickOutside from '../directives/click-outside'
+import clickOutside from './click-outside'
 
 type ListItemGenerator = (h: CreateElement, country: string, code: number) => VNode
 

@@ -15,10 +15,12 @@
     "types/*.d.ts"
   ],
   "scripts": {
+    "build:lib": "vue-cli-service build --target lib --name vue-phone-input src/main.ts",
+    "build:demo": "vue-cli-service build src/main.ts",
+    "ts:lib": "tsc -p src/tsconfig.json",
     "demo": "vue-cli-service serve --mode demo",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --name vue-phone-input src/main.ts",
     "lint": "vue-cli-service lint",
+    "serve": "vue-cli-service serve --open --mode development demo/main.ts",
     "test:unit": "vue-cli-service test:unit"
   },
   "repository": {

@@ -6,7 +6,6 @@
     "jsx": "preserve",
     "declaration": true,
     "declarationDir": "types",
-    "declarationMap": true,
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -15,35 +14,19 @@
     "strictPropertyInitialization": false,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "types": [
-      "dom-inputevent",
-      "jest",
-      "libphonenumber-js",
-      "webpack-env"
-    ],
-    "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    },
     "lib": [
       "esnext",
       "dom",
       "dom.iterable",
       "scripthost"
+    ],
+    "types": [
+      "dom-inputevent",
+      "jest",
+      "libphonenumber-js",
+      "webpack-env"
     ]
   },
-  "include": [
-    "demo/**/*.ts",
-    "demo/**/*.vue",
-    "node_modules/libphonenumber-js/metadata.full.json",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
-  ],
   "exclude": [
     "node_modules"
   ]

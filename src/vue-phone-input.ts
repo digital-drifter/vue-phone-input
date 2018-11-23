@@ -1,6 +1,6 @@
 import Vue, { CreateElement, VNode } from 'vue'
 import { AsYouType, CountryCode, getCountryCallingCode, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
-import CountryList from './components/CountryList'
+import CountryList from './country-list'
 import { getLanguage } from './utils'
 import * as MetaData from 'libphonenumber-js/metadata.full.json'
 
