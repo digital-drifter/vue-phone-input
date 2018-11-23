@@ -1,11 +1,41 @@
 import Vue, { CreateElement, VNode } from 'vue'
 import { AsYouType, CountryCode, getCountryCallingCode, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
 import CountryList from './components/CountryList'
+import { getLanguage } from './utils'
 import * as MetaData from 'libphonenumber-js/metadata.full.json'
 
 type CountryCallingCodes = { [k: string]: number }
 
+interface LookupResponse {
+  as: string
+  city: string
+  country: string
+  countryCode: string
+  isp: string
+  lat: number
+  lon: number
+  org: string
+  query: string
+  region: string
+  regionName: string
+  status: string
+  timezone: string
+  zip: string
+}
+
 const VuePhoneInput = Vue.extend({
+  beforeMount (): void {
+    if (!this.disableExternalLookup) {
+      fetch(process.env.VUE_APP_IP_API_URL)
+        .then((response: Response) => response.json())
+        .then((data: LookupResponse) => {
+          this.selectedCountry = data.countryCode
+        })
+    } else {
+      const lang = getLanguage()
+      console.log(lang)
+    }
+  },
   components: {
     'country-list': CountryList
   },
@@ -15,7 +45,7 @@ const VuePhoneInput = Vue.extend({
     },
     country: {
       get (): CountryCode {
-        if (!(this as any).selectedCountry) {
+        if (!(this as any).selectedCountry && typeof (this as any).defaultCountry !== 'undefined') {
           (this as any).selectedCountry = (this as any).defaultCountry as any
         }
         return (this as any).selectedCountry
@@ -50,8 +80,12 @@ const VuePhoneInput = Vue.extend({
   data () {
     return {
       menuOpen: false,
-      selectedCountry: '' as CountryCode
+      selectedCountry: 'US' as CountryCode
     }
+  },
+  destroyed (): void {
+    this.$off('update:selectedCountry')
+    this.$off('update:visible')
   },
   props: {
     allowedCountries: {
@@ -60,8 +94,12 @@ const VuePhoneInput = Vue.extend({
     },
     defaultCountry: {
       type: [ Object, String ],
+      required: false
+    },
+    disableExternalLookup: {
+      type: Boolean,
       required: false,
-      default: 'PG' as CountryCode
+      default: false
     },
     hideFlags: {
       type: Boolean,
