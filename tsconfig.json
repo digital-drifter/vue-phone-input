@@ -9,11 +9,14 @@
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
+    "resolveJsonModule": true,
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
-      "jest"
+      "dom-inputevent",
+      "jest",
+      "webpack-env"
     ],
     "paths": {
       "@/*": [
@@ -28,6 +31,7 @@
     ]
   },
   "include": [
+    "node_modules/libphonenumber-js/metadata.full.json",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
