@@ -1,6 +1,7 @@
 <template>
     <div id="app">
         <vue-phone-input name="phone_number" v-model="phoneNumber"></vue-phone-input>
+        <p>{{ phoneNumber }}</p>
     </div>
 </template>
 

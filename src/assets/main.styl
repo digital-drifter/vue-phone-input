@@ -1,0 +1,103 @@
+grey-color = rgba(144, 164, 174, .1)
+list-options-height = 210px
+list-width = 100%
+min-height = 24px
+
+.vue-phone-input__wrapper
+  display inline-block
+  min-height min-height
+
+  input
+    border none
+
+    [name="phone_number"].is-valid
+      background-color rgba(200, 230, 201, 1)
+
+    &[name="phone_number"]:not(.is-valid)
+      background-color rgba(255, 205, 210, .3)
+
+  div
+    position relative
+
+    div
+      align-items center
+      color rgba(96, 125, 139, .6)
+      display flex
+      flex-direction row
+      font-style italic
+      min-width 42px
+      text-align center
+      width 42px
+
+    input
+      height min-height
+      min-height min-height
+      outline none
+
+    .list-wrapper
+      box-shadow 2px 3px 10px -2px
+      position absolute
+      height min-height + list-options-height
+      top 100%
+      width 100%
+
+      input, ul
+        display flex
+        flex-direction column
+        margin 0
+        padding 0
+        width list-width
+
+      input
+        border-top 1px solid grey-color
+
+      ul
+        background-color grey-color
+        font-style italic
+        list-style-type none
+        margin-block-end unset
+        margin-block-start unset
+        height list-options-height
+        overflow auto
+        padding-inline-end unset
+        padding-inline-start unset
+        margin 0
+        position absolute
+        z-index 10
+
+        li
+          display inline-block
+          padding 3px 15px
+          text-align start
+
+          &.active
+            background-color rgba(144, 164, 174, .5)
+
+            span
+              color white !important
+
+        li:hover
+          background-color grey-color
+          cursor pointer
+
+  .list-enter-active, .list-leave-active, .list-move
+    transition all .5s cubic-bezier(.55, 0, .1, 1)
+
+  .list-enter
+    opacity 0
+    transform scale(0)
+
+  .list-leave-active
+    opacity 0
+    position absolute
+    transform scale(0)
+
+  .slide-fade-enter-active, .slide-fade-leave-active, .slide-fade-move
+    transition all .3s ease
+
+  .slide-fade-enter
+    transition all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0)
+
+  .slide-fade-active
+    transform translateX(10px)
+    opacity 0

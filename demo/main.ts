@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import VuePhoneInput from './vue-phone-input'
+import VuePhoneInput from '@/vue-phone-input'
 import 'flag-icon-css/css/flag-icon.min.css'
-import './assets/main.styl'
-import App from './App.vue'
+import '@/assets/main.styl'
+import App from '../src/App.vue'
 
 Vue.config.productionTip = false
 

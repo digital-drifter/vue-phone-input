@@ -1,21 +1,13 @@
 import Vue, { CreateElement, VNode } from 'vue'
 import { AsYouType, CountryCode, getCountryCallingCode, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
-import CountryList from './countries'
+import CountryList from './components/CountryList'
 import * as MetaData from 'libphonenumber-js/metadata.full.json'
-
-console.log(MetaData.country_calling_codes)
 
 type CountryCallingCodes = { [k: string]: number }
 
 const VuePhoneInput = Vue.extend({
-  data () {
-    return {
-      menuOpen: false,
-      selectedCountry: '' as CountryCode
-    }
-  },
   components: {
-    CountryList
+    'country-list': CountryList
   },
   computed: {
     asYouType (): AsYouType {
@@ -47,15 +39,34 @@ const VuePhoneInput = Vue.extend({
       }
     }
   },
+  created (): void {
+    this.$on('update:selectedCountry', (country: string) => {
+      this.selectedCountry = country
+    })
+    this.$on('update:visible', (visible: boolean) => {
+      this.menuOpen = visible
+    })
+  },
+  data () {
+    return {
+      menuOpen: false,
+      selectedCountry: '' as CountryCode
+    }
+  },
   props: {
     allowedCountries: {
-      type: [Array, Object],
+      type: [ Array, Object ],
       required: false
     },
     defaultCountry: {
-      type: [Object, String],
+      type: [ Object, String ],
       required: false,
       default: 'PG' as CountryCode
+    },
+    hideFlags: {
+      type: Boolean,
+      required: false,
+      default: false
     },
     name: {
       type: String,
@@ -68,7 +79,7 @@ const VuePhoneInput = Vue.extend({
       default: 'Enter Phone Number'
     },
     preferredCountries: {
-      type: [Array, Object],
+      type: [ Array, Object ],
       required: false
     },
     value: {
@@ -82,7 +93,35 @@ const VuePhoneInput = Vue.extend({
       return new AsYouType(self.country)
     }
 
-    const countryListDropdown = h('country-list', {
+    const innerChildren: VNode[] = []
+
+    if (!this.hideFlags) {
+      innerChildren.push(h('span', {
+        class: {
+          'flag-icon': true,
+          [`flag-icon-${ this.country.toLowerCase() }`]: true
+        },
+        on: {
+          click: (): void => {
+            this.menuOpen = !this.menuOpen
+          }
+        },
+        style: {
+          width: '32px'
+        }
+      }))
+    }
+
+    innerChildren.push(h('div', {
+      domProps: {
+        innerHTML: `+${ getCountryCallingCode(this.country) }`
+      }
+    }))
+
+    innerChildren.push(h('country-list', {
+      attrs: {
+        name: 'slide-fade'
+      },
       props: {
         countries: Object.keys(MetaData.country_calling_codes).reduce((codes: CountryCallingCodes, code: string) => {
           const countryCodes: string[] = (MetaData.country_calling_codes as any)[code]
@@ -91,80 +130,47 @@ const VuePhoneInput = Vue.extend({
 
           return codes
         }, {} as CountryCallingCodes),
-        selected: this.country
+        selected: this.country,
+        visible: self.menuOpen
       },
       style: {
         display: self.menuOpen ? 'inline-block' : 'none'
       }
-    })
+    }))
 
-    const children: string | VNode | VNode[] = [
-      h('div', {
-        style: {
-          display: 'inline-flex'
+    innerChildren.push(h('input', {
+      attrs: {
+        name: self.name,
+        placeholder: self.placeholder,
+        type: 'tel'
+      },
+      class: {
+        'is-valid': self.phoneNumber ? self.phoneNumber.isValid() : false
+      },
+      domProps: {
+        value: asYouType().input(self.value)
+      },
+      on: {
+        input: function (event: InputEvent) {
+          if (event.target) {
+            const { value } = event.target as HTMLInputElement
+            self.$emit('input', value)
+          }
         }
-      }, [
-        h('span', {
-          class: {
-            'flag-icon': true,
-            [`flag-icon-${ this.country.toLowerCase() }`]: true
-          },
-          on: {
-            click: (event: MouseEvent): void => {
-              this.menuOpen = !this.menuOpen
-            }
-          },
-          style: {
-            width: '32px'
-          }
-        }),
-        h('div', {
-          domProps: {
-            innerHTML: `+${getCountryCallingCode(this.country)}`
-          }
-        }),
-        countryListDropdown,
-        h('input', {
-          attrs: {
-            name: self.name,
-            placeholder: self.placeholder,
-            type: 'tel'
-          },
-          class: {
-            'is-valid': self.phoneNumber ? self.phoneNumber.isValid() : false
-          },
-          domProps: {
-            value: asYouType().input(self.value)
-          },
-          on: {
-            input: function (event: InputEvent) {
-              if (event.target) {
-                const {value} = event.target as HTMLInputElement
-                self.$emit('input', value)
-              }
-            }
-          }
-        })
-      ])
-    ]
+      }
+    }))
 
     return h('div', {
       class: {
         'vue-phone-input__wrapper': true
       }
-      // props: {
-      //   asYouType: {
-      //     type: Object,
-      //     required: false,
-      //     default: () => new AsYouType(self.country)
-      //   }
-      // }
-      // scopedSlots: {
-      //   label: (props: Dictionary<any>): VNode | VNode[] => {
-      //     return h('')
-      //   }
-      // }
-    }, children)
+    }, [
+      h('div', {
+        style: {
+          display: 'inline-flex'
+        }
+      }, innerChildren)
+    ])
   }
 } as any)
 

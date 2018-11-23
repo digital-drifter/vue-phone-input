@@ -1,4 +1,5 @@
 import Vue, { CreateElement, VNode } from 'vue'
+import clickOutside from '../directives/click-outside'
 
 type ListItemGenerator = (h: CreateElement, country: string, code: number) => VNode
 
@@ -11,13 +12,9 @@ const createListItem: ListItemGenerator = function (h: CreateElement, country: s
     on: {
       click: (): void => {
         if (listItem.context) {
-          listItem.context.$emit('input', listItem.key)
+          listItem.context.$parent.$emit('update:selectedCountry', listItem.key)
         }
       }
-    },
-    style: {
-      padding: '3px 15px',
-      display: 'inline-block'
     }
   }, [
     h('span', {
@@ -38,7 +35,7 @@ const createListItem: ListItemGenerator = function (h: CreateElement, country: s
     })
   ])
 
-  if (listItem.context && listItem.data && listItem.key === (listItem.context as any).selected) {
+  if (listItem.context && listItem.data && (listItem.key === (listItem.context as any).selected)) {
     Object.assign(listItem.data.class, { active: true })
   }
 
@@ -51,23 +48,49 @@ const CountryList = Vue.extend({
       filter: ''
     }
   },
-  props: [ 'countries', 'selected', 'value' ],
+  directives: {
+    'click-outside': clickOutside
+  },
+  methods: {
+    onClickOutside (): void {
+      if (this.visible) {
+        this.$parent.$emit('update:visible', false)
+      }
+    }
+  },
+  props: [ 'countries', 'selected', 'visible' ],
   render: function (h: CreateElement): VNode {
     return h('div', {
       class: {
         'list-wrapper': true
-      }
+      },
+      directives: [
+        {
+          arg: '',
+          expression: '',
+          modifiers: {},
+          name: 'click-outside',
+          oldValue: this.visible,
+          value: this.onClickOutside
+        }
+      ]
     }, [
       h('input', {
         attrs: {
           maxlength: 2,
           type: 'text'
         },
+        domProps: {
+          value: this.selected
+        },
+        key: 'list-input',
         on: {
           input: (event: InputEvent): void => {
             if (event.target) {
               const { value } = event.target as HTMLInputElement
-              this.filter = value
+              this.$nextTick(() => {
+                this.filter = value
+              })
             }
           }
         }
@@ -76,11 +99,29 @@ const CountryList = Vue.extend({
         attrs: {
           name: 'list'
         },
+        key: 'list-items',
+        ref: 'list',
         tag: 'ul'
       }, Object.keys(this.countries)
         .filter((country: string) => !this.filter.length || country.includes(this.filter))
         .reduce((list: VNode[], country: string) => [ ...list, createListItem(h, country, this.countries[country]) ], []))
     ])
+  },
+  watch: {
+    visible: {
+      immediate: true,
+      handler: function (isVisible: boolean): void {
+        if (isVisible) {
+          const activeElement = document.querySelector('li.active') as HTMLElement
+
+          if (activeElement) {
+            const { $el } = this.$refs.list as Vue
+
+            $el.scrollTo(0, activeElement.offsetTop)
+          }
+        }
+      }
+    }
   }
 })
 
