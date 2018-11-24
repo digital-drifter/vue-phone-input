@@ -63,7 +63,7 @@ const configs = [
       ]
     }),
     url({
-      limit: 10 * 1024,
+      limit: 100 * 1024,
       include: [ resolve('node_modules/flag-icon-css/flags/**/*.svg') ],
       emitFiles: true
     }),
