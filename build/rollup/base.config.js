@@ -6,7 +6,8 @@ import postcss from 'rollup-plugin-postcss'
 import typescript from 'rollup-plugin-typescript2'
 import autoExternal from 'rollup-plugin-auto-external'
 import { terser } from 'rollup-plugin-terser'
-import replace from "rollup-plugin-re"
+import replace from 'rollup-plugin-re'
+import url from 'rollup-plugin-url'
 import autoprefixer from 'autoprefixer'
 import path from 'path'
 
@@ -60,6 +61,11 @@ const configs = [
       plugins: [
         autoprefixer()
       ]
+    }),
+    url({
+      limit: 10 * 1024,
+      include: [ '**/*.svg' ],
+      emitFiles: true
     }),
     typescript(),
     commonjs(),

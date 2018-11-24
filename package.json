@@ -42,6 +42,7 @@
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^3.0.0",
     "rollup-plugin-typescript2": "^0.18.0",
+    "rollup-plugin-url": "^2.0.1",
     "serve": "^10.1.1",
     "style-resources-loader": "^1.2.1",
     "stylus": "^0.54.5",
