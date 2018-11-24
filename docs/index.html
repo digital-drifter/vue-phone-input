@@ -4,13 +4,20 @@
   <script src="https://unpkg.com/vue@2.5.17/dist/vue.js"></script>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <vue-phone-input v-model="phoneNumber"></vue-phone-input>
+  </div>
   <script src="vue-phone-input.js"></script>
   <script>
     Vue.use(VuePhoneInput)
     
     new Vue({
-      el: '#app'
+      el: '#app',
+      data () {
+        return {
+          phoneNumber: ''
+        }
+      }
     })
   </script>
 </body>
