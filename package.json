@@ -5,6 +5,7 @@
   "author": "Brian Lee",
   "scripts": {
     "build:demo": "vue-cli-service build demo/main.ts",
+    "build:deploy": "./deploy.sh",
     "build:lib": "vue-cli-service build --mode production --target lib --name VuePhoneInput ./src/index.ts",
     "lint": "vue-cli-service lint",
     "rollup:dist": "rollup -c build/rollup/build.config.js",
