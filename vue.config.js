@@ -1,18 +1,14 @@
-const path = require('path')
+let config
 
-module.exports = {
-  chainWebpack: config => {
-    config.entryPoints.delete('app')
-
-    config.entry('lib').add('src', 'index.ts')
-  },
-
-  pluginOptions: {
-    'style-resources-loader': {
-      preProcessor: 'stylus',
-      patterns: [
-        path.resolve(__dirname, 'src/assets/*.styl')
-      ]
-    }
-  }
+switch (process.env.NODE_ENV) {
+  case 'development':
+    config = require('./build/vue-cli/demo.config')
+    break
+  case 'production':
+    config = require('./build/vue-cli/lib.config')
+    break
+  default:
+    config = require('./build/vue-cli/demo.config')
 }
+
+module.exports = config

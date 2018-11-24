@@ -1,11 +1,12 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./src"
+    "baseUrl": ".",
+    "target": "esnext"
   },
   "include": [
-    "node_modules/libphonenumber-js/metadata.full.json",
-    "./**/*.ts",
-    "./**/*.vue"
+    "../node_modules/libphonenumber-js/metadata.full.json",
+    "../types/**/*.ts",
+    "./*.ts"
   ]
 }

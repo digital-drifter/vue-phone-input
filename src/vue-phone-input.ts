@@ -1,8 +1,9 @@
 import Vue, { CreateElement, VNode } from 'vue'
 import { AsYouType, CountryCode, getCountryCallingCode, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
+import * as MetaData from 'libphonenumber-js/metadata.full.json'
 import CountryList from './country-list'
 import { getLanguage } from './utils'
-import * as MetaData from 'libphonenumber-js/metadata.full.json'
+import './assets/main.styl'
 
 type CountryCallingCodes = { [k: string]: number }
 
@@ -25,7 +26,7 @@ interface LookupResponse {
 
 const VuePhoneInput = Vue.extend({
   beforeMount (): void {
-    if (!this.disableExternalLookup) {
+    if (!this.disableExternalLookup && process.env.VUE_APP_IP_API_URL) {
       fetch(process.env.VUE_APP_IP_API_URL)
         .then((response: Response) => response.json())
         .then((data: LookupResponse) => {
@@ -99,7 +100,7 @@ const VuePhoneInput = Vue.extend({
     disableExternalLookup: {
       type: Boolean,
       required: false,
-      default: false
+      default: true
     },
     hideFlags: {
       type: Boolean,
