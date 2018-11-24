@@ -15,22 +15,22 @@ const configs = [
   {
     file: resolve('dist/vue-phone-input.js'),
     format: 'umd',
-    env: process.env.NODE_ENV || 'development'
+    env: process.env.NODE_ENV || '\'development\''
   },
   {
     file: resolve('dist/vue-phone-input.min.js'),
     format: 'umd',
-    env: process.env.NODE_ENV || 'production'
+    env: process.env.NODE_ENV || '\'production\''
   },
   {
     file: resolve('dist/vue-phone-input.cjs.js'),
     format: 'cjs',
-    env: process.env.NODE_ENV || 'production'
+    env: process.env.NODE_ENV || '\'production\''
   },
   {
     file: resolve('dist/vue-phone-input.esm.js'),
     format: 'es',
-    env: process.env.NODE_ENV || 'production'
+    env: process.env.NODE_ENV || '\'production\''
   }
 ].map((opts) => ({
   cache: false,
