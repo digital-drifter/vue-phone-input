@@ -25,6 +25,7 @@
     "@vue/cli-plugin-unit-jest": "^3.1.1",
     "@vue/cli-service": "^3.1.4",
     "@vue/test-utils": "^1.0.0-beta.25",
+    "autoprefixer": "^9.3.1",
     "babel-core": "7.0.0-bridge.0",
     "flag-icon-css": "^3.2.1",
     "jest": "^23.6.0",

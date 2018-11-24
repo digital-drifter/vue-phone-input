@@ -7,6 +7,7 @@ import typescript from 'rollup-plugin-typescript2'
 import autoExternal from 'rollup-plugin-auto-external'
 import { terser } from 'rollup-plugin-terser'
 import replace from "rollup-plugin-re"
+import autoprefixer from 'autoprefixer'
 import path from 'path'
 
 const resolve = p => path.resolve(__dirname, '../../', p)
@@ -52,7 +53,14 @@ const configs = [
       ]
     }),
     json(),
-    postcss(),
+    postcss({
+      minimize: true,
+      sourceMap: true,
+      extract: resolve('dist/vue-phone-input.css'),
+      plugins: [
+        autoprefixer()
+      ]
+    }),
     typescript(),
     commonjs(),
     autoExternal(),
