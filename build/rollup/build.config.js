@@ -1,14 +1,18 @@
 import { rollup } from 'rollup'
 import configs from './base.config'
-import fs from 'fs'
+import fs from 'fs-extra'
 import path from 'path'
 import zlib from 'zlib'
 
-if (!fs.existsSync('dist')) {
-  fs.mkdirSync('dist')
+const resolve = p => path.resolve(__dirname, '../../', p)
+
+if (!fs.existsSync(resolve('dist'))) {
+  fs.mkdirSync(resolve('dist'))
 }
 
 build(configs)
+
+fs.copySync(resolve('dist/flags'), resolve('node_modules/flag-icon-css/flags'))
 
 function build (builds) {
   let built = 0

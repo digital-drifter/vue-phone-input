@@ -7,7 +7,6 @@ import typescript from 'rollup-plugin-typescript2'
 import autoExternal from 'rollup-plugin-auto-external'
 import { terser } from 'rollup-plugin-terser'
 import replace from 'rollup-plugin-re'
-import url from 'rollup-plugin-url'
 import autoprefixer from 'autoprefixer'
 import path from 'path'
 
@@ -15,22 +14,22 @@ const resolve = p => path.resolve(__dirname, '../../', p)
 
 const configs = [
   {
-    file: resolve('dist/vue-phone-input.js'),
+    file: resolve('dist/js/vue-phone-input.js'),
     format: 'umd',
     env: process.env.NODE_ENV || '\'development\''
   },
   {
-    file: resolve('dist/vue-phone-input.min.js'),
+    file: resolve('dist/js/vue-phone-input.min.js'),
     format: 'umd',
     env: process.env.NODE_ENV || '\'production\''
   },
   {
-    file: resolve('dist/vue-phone-input.cjs.js'),
+    file: resolve('dist/js/vue-phone-input.cjs.js'),
     format: 'cjs',
     env: process.env.NODE_ENV || '\'production\''
   },
   {
-    file: resolve('dist/vue-phone-input.esm.js'),
+    file: resolve('dist/js/vue-phone-input.esm.js'),
     format: 'es',
     env: process.env.NODE_ENV || '\'production\''
   }
@@ -57,18 +56,10 @@ const configs = [
     postcss({
       minimize: true,
       sourceMap: true,
-      extract: resolve('dist/vue-phone-input.css'),
+      extract: resolve('dist/css/vue-phone-input.css'),
       plugins: [
         autoprefixer()
       ]
-    }),
-    url({
-      limit: 100 * 1024,
-      include: [
-        resolve('node_modules/flag-icon-css/flags/1x1/*.svg'),
-        resolve('node_modules/flag-icon-css/flags/4x3/*.svg')
-      ],
-      emitFiles: true
     }),
     typescript(),
     commonjs(),
