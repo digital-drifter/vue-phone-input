@@ -6,6 +6,7 @@ import postcss from 'rollup-plugin-postcss'
 import typescript from 'rollup-plugin-typescript2'
 import autoExternal from 'rollup-plugin-auto-external'
 import { terser } from 'rollup-plugin-terser'
+import replace from "rollup-plugin-re"
 import path from 'path'
 
 const resolve = p => path.resolve(__dirname, '../../', p)
@@ -13,24 +14,33 @@ const resolve = p => path.resolve(__dirname, '../../', p)
 const configs = [
   {
     file: resolve('dist/vue-phone-input.js'),
-    format: 'umd'
+    format: 'umd',
+    env: process.env.NODE_ENV || 'development'
   },
   {
     file: resolve('dist/vue-phone-input.min.js'),
-    format: 'umd'
+    format: 'umd',
+    env: process.env.NODE_ENV || 'production'
   },
   {
     file: resolve('dist/vue-phone-input.cjs.js'),
-    format: 'cjs'
+    format: 'cjs',
+    env: process.env.NODE_ENV || 'production'
   },
   {
     file: resolve('dist/vue-phone-input.esm.js'),
-    format: 'es'
+    format: 'es',
+    env: process.env.NODE_ENV || 'production'
   }
 ].map((opts) => ({
   cache: false,
   input: resolve('src/index.ts'),
   plugins: [
+    replace({
+      replaces: {
+        'process.env.NODE_ENV': opts.env
+      }
+    }),
     node({
       extensions: [ '.js', '.json', '.ts' ]
     }),
