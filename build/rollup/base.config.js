@@ -7,6 +7,7 @@ import typescript from 'rollup-plugin-typescript2'
 import autoExternal from 'rollup-plugin-auto-external'
 import { terser } from 'rollup-plugin-terser'
 import replace from 'rollup-plugin-re'
+// import sprites from 'postcss-sprites'
 import autoprefixer from 'autoprefixer'
 import path from 'path'
 
@@ -56,6 +57,7 @@ const configs = [
     postcss({
       minimize: true,
       sourceMap: true,
+      extensions: ['.css', '.scss', '.sass', '.styl', '.less'],
       extract: resolve('dist/css/vue-phone-input.css'),
       plugins: [
         autoprefixer()

@@ -2,9 +2,6 @@
   "compilerOptions": {
     "module": "esnext",
     "strict": true,
-    "declaration": false,
-    "declarationDir": "types",
-    "declarationMap": false,
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,

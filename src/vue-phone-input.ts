@@ -1,11 +1,11 @@
 import Vue, { CreateElement, VNode } from 'vue'
 import { AsYouType, CountryCode, getCountryCallingCode, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
-import * as MetaData from 'libphonenumber-js/metadata.full.json'
+// import * as MetaData from 'libphonenumber-js/metadata.full.json'
+// import * as CountryData from './assets/countries.json'
 import CountryList from './country-list'
 import { getLanguage } from './utils'
-import './assets/main.styl'
 
-type CountryCallingCodes = { [k: string]: number }
+// type CountryCallingCodes = { [k: string]: number }
 
 interface LookupResponse {
   as: string
@@ -162,13 +162,13 @@ const VuePhoneInput = Vue.extend({
         name: 'slide-fade'
       },
       props: {
-        countries: Object.keys(MetaData.country_calling_codes).reduce((codes: CountryCallingCodes, code: string) => {
-          const countryCodes: string[] = (MetaData.country_calling_codes as any)[code]
-
-          countryCodes.forEach((country: string) => Object.assign(codes, { [country]: code }))
-
-          return codes
-        }, {} as CountryCallingCodes),
+        // countries: Object.keys(MetaData.country_calling_codes).reduce((codes: CountryCallingCodes, code: string) => {
+        //   const countryCodes: string[] = (MetaData.country_calling_codes as any)[code]
+        //
+        //   countryCodes.forEach((country: string) => Object.assign(codes, { [country]: code }))
+        //
+        //   return codes
+        // }, {} as CountryCallingCodes),
         selected: this.country,
         visible: self.menuOpen
       },

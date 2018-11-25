@@ -2,7 +2,10 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "esnext"
+    "target": "esnext",
+    "declaration": true,
+    "declarationDir": "types",
+    "declarationMap": true
   },
   "include": [
     "../node_modules/libphonenumber-js/metadata.full.json",
