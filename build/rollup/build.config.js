@@ -12,8 +12,6 @@ if (!fs.existsSync(resolve('dist'))) {
 
 build(configs)
 
-fs.copySync(resolve('dist/flags'), resolve('node_modules/flag-icon-css/flags'))
-
 function build (builds) {
   let built = 0
   const total = builds.length
