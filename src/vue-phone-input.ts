@@ -24,7 +24,11 @@ const VuePhoneInput = Vue.extend({
   },
   computed: {
     asYouType (): AsYouType {
-      return new AsYouType(this.country as any)
+      if (this.country) {
+        return new AsYouType(this.country as any)
+      }
+
+      return new AsYouType('US')
     },
     isValid (): boolean {
       if ((this.asYouType !== undefined) && (typeof (this as any).asYouType.getNumber === 'function')) {
@@ -35,8 +39,11 @@ const VuePhoneInput = Vue.extend({
     },
     phoneNumber (): PhoneNumber | undefined {
       try {
-        return parsePhoneNumber(this.value, this.country)
+        const parsed =  parsePhoneNumber(this.value, this.country.cca2)
+        console.log(parsed)
+        return parsed
       } catch (e) {
+        console.log(e)
         return undefined
       }
     }
@@ -105,7 +112,11 @@ const VuePhoneInput = Vue.extend({
     const self = this
 
     const asYouType: () => AsYouType = () => {
-      return new AsYouType(self.country)
+      if (this.country) {
+        return new AsYouType(this.country.cca2)
+      }
+
+      return new AsYouType('US')
     }
 
     const innerChildren: VNode[] = []
@@ -124,10 +135,6 @@ const VuePhoneInput = Vue.extend({
           click: (): void => {
             this.menuOpen = !this.menuOpen
           }
-        },
-        style: {
-          flexGrow: 1,
-          textAlign: 'center'
         }
       }, [
         h('svg', {
@@ -147,6 +154,9 @@ const VuePhoneInput = Vue.extend({
 
     if (!this.hideFlags) {
       innerChildren.push(h('span', {
+        class: {
+          'flag-indicator': true
+        },
         domProps: {
           innerHTML: this.country.flag
         },
@@ -154,10 +164,6 @@ const VuePhoneInput = Vue.extend({
           click: (): void => {
             this.menuOpen = !this.menuOpen
           }
-        },
-        style: {
-          flexGrow: 1,
-          textAlign: 'center'
         }
       }))
     }
@@ -196,10 +202,11 @@ const VuePhoneInput = Vue.extend({
         input: function (event: InputEvent) {
           if (event.target) {
             const { value } = event.target as HTMLInputElement
-            self.$emit('input', value)
+            self.$emit('input', Array.isArray(value) ? value.shift() : value)
           }
         }
       },
+      ref: 'phoneNumberInput',
       style: {
         alignSelf: 'center',
         flexGrow: 4
@@ -227,6 +234,17 @@ const VuePhoneInput = Vue.extend({
         }
       }, innerChildren)
     ])
+  },
+  watch: {
+    menuOpen: {
+      handler: function (isOpen: boolean): void {
+        if (!isOpen) {
+          (this as any).$nextTick(() => {
+            ((this as any).$refs.phoneNumberInput as HTMLInputElement).focus()
+          })
+        }
+      }
+    }
   }
 } as any)
 

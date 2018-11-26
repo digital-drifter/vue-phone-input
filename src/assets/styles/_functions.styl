@@ -18,6 +18,13 @@ elevate(elevation = 15)
              0 unit(elevation, px) unit(elevation + 7, px) unit(ceil(elevation / 8), px) rgba(0,0,0,0.2),
              0 unit((elevation / 3) + 1, px) unit((elevation * 2) - 2, px) unit(elevation / 3, px) rgba(0,0,0,0.12)
 
+centered(grow = 1, center-text = false, center-self = false)
+  flex-grow grow
+  if center-text
+    text-align center
+  if center-self
+    align-self center
+
 colorize(el, background = false)
   attribute = !background ? 'color' : 'background-color'
 

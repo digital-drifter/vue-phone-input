@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VuePhoneInput from '../docs/js/vue-phone-input'
+import VuePhoneInput from '../src'
 import App from './App.vue'
 
 Vue.config.productionTip = false

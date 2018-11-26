@@ -91,7 +91,7 @@ class Rippler {
     this.ripple.style.pointerEvents = 'none'
     this.ripple.style.position = 'relative'
     this.ripple.style.zIndex = '9999'
-    this.ripple.style.backgroundColor = 'rgba(0, 0, 0, 0.35)'
+    this.ripple.style.backgroundColor = 'rgba(0, 0, 0, 0.15)'
   }
 
   private initRippleContainerStyles (): void {

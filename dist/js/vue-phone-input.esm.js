@@ -21026,6 +21026,7 @@ var CountryList = Vue.extend({
                             }
                         }
                     },
+                    ref: 'listInput',
                     style: {
                         flexGrow: 5
                     }
@@ -21072,6 +21073,7 @@ var CountryList = Vue.extend({
         visible: {
             immediate: true,
             handler: function (isVisible) {
+                var _this = this;
                 if (isVisible) {
                     var activeElement = document.querySelector('li.active');
                     if (activeElement) {
@@ -21081,6 +21083,9 @@ var CountryList = Vue.extend({
                         var $el = this.$refs.list.$el;
                         $el.scrollTo(0, activeElement.offsetTop);
                     }
+                    this.$nextTick(function () {
+                        _this.$refs.listInput.focus();
+                    });
                 }
             }
         }
@@ -23845,7 +23850,7 @@ var Rippler = /** @class */ (function () {
         this.ripple.style.pointerEvents = 'none';
         this.ripple.style.position = 'relative';
         this.ripple.style.zIndex = '9999';
-        this.ripple.style.backgroundColor = 'rgba(0, 0, 0, 0.35)';
+        this.ripple.style.backgroundColor = 'rgba(0, 0, 0, 0.15)';
     };
     Rippler.prototype.initRippleContainerStyles = function () {
         this.rippleContainer.style.position = 'absolute';
@@ -23922,7 +23927,10 @@ var VuePhoneInput = Vue.extend({
     },
     computed: {
         asYouType: function () {
-            return new AsYouType$1(this.country);
+            if (this.country) {
+                return new AsYouType$1(this.country);
+            }
+            return new AsYouType$1('US');
         },
         isValid: function () {
             if ((this.asYouType !== undefined) && (typeof this.asYouType.getNumber === 'function')) {
@@ -23932,9 +23940,12 @@ var VuePhoneInput = Vue.extend({
         },
         phoneNumber: function () {
             try {
-                return parsePhoneNumber$1(this.value, this.country);
+                var parsed = parsePhoneNumber$1(this.value, this.country.cca2);
+                console.log(parsed);
+                return parsed;
             }
             catch (e) {
+                console.log(e);
                 return undefined;
             }
         }
@@ -24004,7 +24015,10 @@ var VuePhoneInput = Vue.extend({
         var _this = this;
         var self = this;
         var asYouType = function () {
-            return new AsYouType$1(self.country);
+            if (_this.country) {
+                return new AsYouType$1(_this.country.cca2);
+            }
+            return new AsYouType$1('US');
         };
         var innerChildren = [];
         innerChildren.push(h('transition', {
@@ -24021,10 +24035,6 @@ var VuePhoneInput = Vue.extend({
                     click: function () {
                         _this.menuOpen = !_this.menuOpen;
                     }
-                },
-                style: {
-                    flexGrow: 1,
-                    textAlign: 'center'
                 }
             }, [
                 h('svg', {
@@ -24043,6 +24053,9 @@ var VuePhoneInput = Vue.extend({
         ]));
         if (!this.hideFlags) {
             innerChildren.push(h('span', {
+                "class": {
+                    'flag-indicator': true
+                },
                 domProps: {
                     innerHTML: this.country.flag
                 },
@@ -24050,10 +24063,6 @@ var VuePhoneInput = Vue.extend({
                     click: function () {
                         _this.menuOpen = !_this.menuOpen;
                     }
-                },
-                style: {
-                    flexGrow: 1,
-                    textAlign: 'center'
                 }
             }));
         }
@@ -24091,10 +24100,11 @@ var VuePhoneInput = Vue.extend({
                 input: function (event) {
                     if (event.target) {
                         var value = event.target.value;
-                        self.$emit('input', value);
+                        self.$emit('input', Array.isArray(value) ? value.shift() : value);
                     }
                 }
             },
+            ref: 'phoneNumberInput',
             style: {
                 alignSelf: 'center',
                 flexGrow: 4
@@ -24121,6 +24131,18 @@ var VuePhoneInput = Vue.extend({
                 }
             }, innerChildren)
         ]);
+    },
+    watch: {
+        menuOpen: {
+            handler: function (isOpen) {
+                var _this = this;
+                if (!isOpen) {
+                    this.$nextTick(function () {
+                        _this.$refs.phoneNumberInput.focus();
+                    });
+                }
+            }
+        }
     }
 });
 

@@ -128,6 +128,7 @@ const CountryList = Vue.extend({
                 }
               }
             },
+            ref: 'listInput',
             style: {
               flexGrow: 5
             }
@@ -187,6 +188,10 @@ const CountryList = Vue.extend({
 
             $el.scrollTo(0, activeElement.offsetTop)
           }
+
+          this.$nextTick(() => {
+            (this.$refs.listInput as HTMLInputElement).focus()
+          })
         }
       }
     }
