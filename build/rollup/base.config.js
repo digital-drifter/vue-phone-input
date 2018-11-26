@@ -75,7 +75,7 @@ const configs = [
 
   plugins.push(autoExternal({
     builtins: false,
-    dependencies: true,
+    dependencies: false,
     peerDependencies: false,
     packagePath: resolve('package.json')
   }))

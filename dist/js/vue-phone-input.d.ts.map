@@ -1,1 +1,1 @@
-{"version":3,"file":"vue-phone-input.d.ts","sourceRoot":"","sources":["src/vue-phone-input.ts"],"names":[],"mappings":"AAAA,OAAO,GAA6B,MAAM,KAAK,CAAA;AAS/C,QAAA,MAAM,aAAa,kEA+OV,CAAA;AAET,eAAe,aAAa,CAAA"}
+{"version":3,"file":"vue-phone-input.d.ts","sourceRoot":"","sources":["src/vue-phone-input.ts"],"names":[],"mappings":"AAAA,OAAO,GAA6B,MAAM,KAAK,CAAA;AAqB/C,QAAA,MAAM,aAAa,kEA+RV,CAAA;AAET,eAAe,aAAa,CAAA"}
