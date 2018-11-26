@@ -88,6 +88,7 @@ const configs = [
 
   return {
     cache: false,
+    external: id => id.includes('vue'),
     input: resolve('src/index.ts'),
     plugins,
     output: {
