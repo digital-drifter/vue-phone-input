@@ -66,7 +66,9 @@ const configs = [
         autoprefixer()
       ]
     }),
-    typescript()
+    typescript({
+      tsconfig: resolve('src/tsconfig.json')
+    })
   ]
 
   // if (opts.format === 'umd') {

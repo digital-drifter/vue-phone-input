@@ -20837,23 +20837,22 @@ function AsYouType$1(country)
 AsYouType$1.prototype = Object.create(AsYouType.prototype, {});
 AsYouType$1.prototype.constructor = AsYouType$1;
 
-var isTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints > 0;
-var eventNames = isTouch ? ['touchstart', 'click'] : ['click'];
-var instances = [];
+const isTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints > 0;
+const eventNames = isTouch ? ['touchstart', 'click'] : ['click'];
+const instances = [];
 function processDirectiveArguments(bindingValue) {
-    var isFunction = typeof bindingValue === 'function';
+    const isFunction = typeof bindingValue === 'function';
     if (!isFunction && typeof bindingValue !== 'object') {
         throw new Error('v-click-outside: Binding value must be a function or an object');
     }
     return {
         handler: isFunction ? bindingValue : bindingValue.handler,
-        middleware: bindingValue.middleware || (function (isClickOutside) { return isClickOutside; }),
+        middleware: bindingValue.middleware || ((isClickOutside) => isClickOutside),
         events: bindingValue.events || eventNames,
     };
 }
-function onEvent(_a) {
-    var el = _a.el, event = _a.event, handler = _a.handler, middleware = _a.middleware;
-    var isClickOutside = event.target !== el && !el.contains(event.target);
+function onEvent({ el, event, handler, middleware }) {
+    const isClickOutside = event.target !== el && !el.contains(event.target);
     if (!isClickOutside) {
         return;
     }
@@ -20861,56 +20860,49 @@ function onEvent(_a) {
         handler(event, el);
     }
 }
-function bind$1(el, _a) {
-    var value = _a.value;
-    var _b = processDirectiveArguments(value), handler = _b.handler, middleware = _b.middleware, events = _b.events;
-    var instance = {
-        el: el,
-        eventHandlers: events.map(function (eventName) { return ({
+function bind$1(el, { value }) {
+    const { handler, middleware, events } = processDirectiveArguments(value);
+    const instance = {
+        el,
+        eventHandlers: events.map((eventName) => ({
             event: eventName,
-            handler: function (event) { return onEvent({ event: event, el: el, handler: handler, middleware: middleware }); },
-        }); }),
+            handler: (event) => onEvent({ event, el, handler, middleware }),
+        })),
     };
-    instance.eventHandlers.forEach(function (eventHandler) { return document.addEventListener(eventHandler.event, eventHandler.handler); });
+    instance.eventHandlers.forEach((eventHandler) => document.addEventListener(eventHandler.event, eventHandler.handler));
     instances.push(instance);
 }
-function update(el, _a) {
-    var value = _a.value;
-    var _b = processDirectiveArguments(value), handler = _b.handler, middleware = _b.middleware, events = _b.events;
-    var instance = instances.find(function (i) { return i.el === el; });
+function update(el, { value }) {
+    const { handler, middleware, events } = processDirectiveArguments(value);
+    const instance = instances.find((i) => i.el === el);
     if (instance) {
-        instance.eventHandlers.forEach(function (eventHandler) {
-            return document.removeEventListener(eventHandler.event, eventHandler.handler);
-        });
-        instance.eventHandlers = events.map(function (eventName) { return ({
+        instance.eventHandlers.forEach((eventHandler) => document.removeEventListener(eventHandler.event, eventHandler.handler));
+        instance.eventHandlers = events.map((eventName) => ({
             event: eventName,
-            handler: function (event) { return onEvent({ event: event, el: el, handler: handler, middleware: middleware }); },
-        }); });
-        instance.eventHandlers.forEach(function (eventHandler) { return document.addEventListener(eventHandler.event, eventHandler.handler); });
+            handler: (event) => onEvent({ event, el, handler, middleware }),
+        }));
+        instance.eventHandlers.forEach((eventHandler) => document.addEventListener(eventHandler.event, eventHandler.handler));
     }
 }
 function unbind(el) {
-    var instance = instances.find(function (i) { return i.el === el; });
+    const instance = instances.find((i) => i.el === el);
     if (instance) {
-        instance.eventHandlers.forEach(function (_a) {
-            var event = _a.event, handler = _a.handler;
-            return document.removeEventListener(event, handler);
-        });
+        instance.eventHandlers.forEach(({ event, handler }) => document.removeEventListener(event, handler));
     }
 }
-var clickOuside = { bind: bind$1, update: update, unbind: unbind, instances: instances };
+const clickOuside = { bind: bind$1, update, unbind, instances };
 // Note: This is to disable the directive on server side, there should be a better way.
 //       https://github.com/ndelvalle/v-click-outside/issues/22
 var clickOutside = (typeof window !== 'undefined' ? clickOuside : {});
 
-var createListItem = function (h, cca2, country) {
-    var listItem = h('li', {
-        "class": {
+const createListItem = function (h, cca2, country) {
+    const listItem = h('li', {
+        class: {
             active: false
         },
         key: cca2,
         on: {
-            click: function () {
+            click: () => {
                 if (listItem.context) {
                     listItem.context.$parent.$emit('update:country', country);
                     listItem.context.$parent.$emit('update:visible', false);
@@ -20922,7 +20914,7 @@ var createListItem = function (h, cca2, country) {
         }
     }, [
         h('span', {
-            "class": {
+            class: {
                 flag: true
             },
             domProps: {
@@ -20936,7 +20928,7 @@ var createListItem = function (h, cca2, country) {
         }, [
             h('span', {
                 domProps: {
-                    innerHTML: country.name.common + " (+" + country.callingCode + ")"
+                    innerHTML: `${country.name.common} (+${country.callingCode})`
                 },
                 style: {
                     color: 'rgba(96,125,139,.6)',
@@ -20959,17 +20951,17 @@ var createListItem = function (h, cca2, country) {
         ])
     ]);
     if (listItem.context && listItem.data && (listItem.key === listItem.context.selected.cca2)) {
-        Object.assign(listItem.data["class"], { active: true });
+        Object.assign(listItem.data.class, { active: true });
     }
     return listItem;
 };
-var CountryList = Vue.extend({
-    created: function () {
+const CountryList = Vue.extend({
+    created() {
         if (this.selected) {
             this.filter = typeof this.selected.name !== 'undefined' ? this.selected.name.common : '';
         }
     },
-    data: function () {
+    data() {
         return {
             filter: ''
         };
@@ -20978,7 +20970,7 @@ var CountryList = Vue.extend({
         'click-outside': clickOutside
     },
     methods: {
-        onClickOutside: function () {
+        onClickOutside() {
             if (this.visible) {
                 this.$parent.$emit('update:visible', false);
             }
@@ -20986,9 +20978,8 @@ var CountryList = Vue.extend({
     },
     props: ['countries', 'selected', 'visible'],
     render: function (h) {
-        var _this = this;
         return h('div', {
-            "class": {
+            class: {
                 'list-wrapper': true
             },
             directives: [
@@ -21017,11 +21008,11 @@ var CountryList = Vue.extend({
                     },
                     key: 'list-input',
                     on: {
-                        input: function (event) {
+                        input: (event) => {
                             if (event.target) {
-                                var value_1 = event.target.value;
-                                _this.$nextTick(function () {
-                                    _this.filter = value_1;
+                                const { value } = event.target;
+                                this.$nextTick(() => {
+                                    this.filter = value;
                                 });
                             }
                         }
@@ -21032,16 +21023,16 @@ var CountryList = Vue.extend({
                     }
                 }),
                 h('span', {
-                    "class": {
+                    class: {
                         clearable: true
                     },
                     domProps: {
                         innerHTML: 'X'
                     },
                     on: {
-                        click: function () {
-                            _this.$parent.$emit('update:country', {});
-                            _this.filter = '';
+                        click: () => {
+                            this.$parent.$emit('update:country', {});
+                            this.filter = '';
                         }
                     }
                 })
@@ -21053,9 +21044,9 @@ var CountryList = Vue.extend({
                 key: 'list-items',
                 ref: 'list',
                 tag: 'ul'
-            }, Object.keys(this.countries).filter(function (cca2) {
-                var country = _this.countries[cca2];
-                var filter = _this.filter.toLowerCase();
+            }, Object.keys(this.countries).filter((cca2) => {
+                const country = this.countries[cca2];
+                const filter = this.filter.toLowerCase();
                 switch (true) {
                     case !filter.length:
                     case cca2.toLowerCase().includes(filter):
@@ -21066,25 +21057,24 @@ var CountryList = Vue.extend({
                         return false;
                 }
             })
-                .reduce(function (list, cca2) { return list.concat([createListItem(h, cca2, _this.countries[cca2])]); }, []))
+                .reduce((list, cca2) => [...list, createListItem(h, cca2, this.countries[cca2])], []))
         ]);
     },
     watch: {
         visible: {
             immediate: true,
             handler: function (isVisible) {
-                var _this = this;
                 if (isVisible) {
-                    var activeElement = document.querySelector('li.active');
+                    const activeElement = document.querySelector('li.active');
                     if (activeElement) {
                         if (this.selected) {
                             this.filter = this.selected.name.common;
                         }
-                        var $el = this.$refs.list.$el;
+                        const { $el } = this.$refs.list;
                         $el.scrollTo(0, activeElement.offsetTop);
                     }
-                    this.$nextTick(function () {
-                        _this.$refs.listInput.focus();
+                    this.$nextTick(() => {
+                        this.$refs.listInput.focus();
                     });
                 }
             }
@@ -23790,10 +23780,10 @@ var Countries = {
 	ZW: ZW
 };
 
-var Rippler = /** @class */ (function () {
-    function Rippler(event) {
+class Rippler {
+    constructor(event) {
         this.transition = 450;
-        var style = getComputedStyle(map.get('el')).borderWidth;
+        const style = getComputedStyle(map.get('el')).borderWidth;
         if (style) {
             this.targetBorder = parseInt(style.replace('px', ''), 10);
         }
@@ -23809,8 +23799,8 @@ var Rippler = /** @class */ (function () {
         }
         this.rippleContainer.appendChild(this.ripple);
         map.get('el').appendChild(this.rippleContainer);
-        this.ripple.style.marginLeft = this.dx + "px";
-        this.ripple.style.marginTop = this.dy + "px";
+        this.ripple.style.marginLeft = `${this.dx}px`;
+        this.ripple.style.marginTop = `${this.dy}px`;
         this.updateRippleContainerStyles();
         this.startRipple();
         if (event.type === 'mousedown') {
@@ -23820,7 +23810,7 @@ var Rippler = /** @class */ (function () {
             this.clearRipple();
         }
     }
-    Rippler.prototype.initGeometry = function (clientX, clientY) {
+    initGeometry(clientX, clientY) {
         this.rect = map.get('el').getBoundingClientRect();
         this.left = this.rect.left;
         this.top = this.rect.top;
@@ -23833,14 +23823,14 @@ var Rippler = /** @class */ (function () {
         this.style = window.getComputedStyle(map.get('el'));
         this.radius = Math.sqrt((this.maxX * this.maxX) + (this.maxY * this.maxY));
         this.border = (this.targetBorder > 0) ? this.targetBorder : 0;
-    };
-    Rippler.prototype.initDomElements = function () {
+    }
+    initDomElements() {
         this.ripple = document.createElement('div');
         this.rippleContainer = document.createElement('div');
         this.ripple.className = 'ripple';
         this.rippleContainer.className = 'ripple-container';
-    };
-    Rippler.prototype.initRippleStyles = function () {
+    }
+    initRippleStyles() {
         this.ripple.style.marginTop = '0px';
         this.ripple.style.marginLeft = '0px';
         this.ripple.style.width = '1px';
@@ -23851,8 +23841,8 @@ var Rippler = /** @class */ (function () {
         this.ripple.style.position = 'relative';
         this.ripple.style.zIndex = '9999';
         this.ripple.style.backgroundColor = 'rgba(0, 0, 0, 0.15)';
-    };
-    Rippler.prototype.initRippleContainerStyles = function () {
+    }
+    initRippleContainerStyles() {
         this.rippleContainer.style.position = 'absolute';
         this.rippleContainer.style.left = 0 - this.border + 'px';
         this.rippleContainer.style.top = 0 - this.border + 'px';
@@ -23862,55 +23852,53 @@ var Rippler = /** @class */ (function () {
         this.rippleContainer.style.overflow = 'hidden';
         this.rippleContainer.style.display = 'flex';
         this.rippleContainer.style.flexDirection = 'row';
-    };
-    Rippler.prototype.updateRippleContainerStyles = function () {
-        this.rippleContainer.style.width = this.width + "px";
-        this.rippleContainer.style.height = this.height + "px";
+    }
+    updateRippleContainerStyles() {
+        this.rippleContainer.style.width = `${this.width}px`;
+        this.rippleContainer.style.height = `${this.height}px`;
         this.rippleContainer.style.borderTopLeftRadius = this.style.borderTopLeftRadius;
         this.rippleContainer.style.borderTopRightRadius = this.style.borderTopRightRadius;
         this.rippleContainer.style.borderBottomLeftRadius = this.style.borderBottomLeftRadius;
         this.rippleContainer.style.borderBottomRightRadius = this.style.borderBottomRightRadius;
         this.rippleContainer.style.direction = 'ltr';
-    };
-    Rippler.prototype.startRipple = function () {
-        var _this = this;
-        setTimeout(function () {
-            _this.ripple.style.width = _this.radius * 2 + 'px';
-            _this.ripple.style.height = _this.radius * 2 + 'px';
-            _this.ripple.style.marginLeft = _this.dx - _this.radius + 'px';
-            _this.ripple.style.marginTop = _this.dy - _this.radius + 'px';
+    }
+    startRipple() {
+        setTimeout(() => {
+            this.ripple.style.width = this.radius * 2 + 'px';
+            this.ripple.style.height = this.radius * 2 + 'px';
+            this.ripple.style.marginLeft = this.dx - this.radius + 'px';
+            this.ripple.style.marginTop = this.dy - this.radius + 'px';
         }, 0);
-    };
-    Rippler.prototype.clearRipple = function () {
-        setTimeout(function () {
-            var el = document.querySelector('.ripple');
+    }
+    clearRipple() {
+        setTimeout(() => {
+            const el = document.querySelector('.ripple');
             if (el) {
                 el.style.backgroundColor = 'rgba(0, 0, 0, 0)';
             }
         }, 250);
-        setTimeout(function () {
-            var els = document.querySelectorAll('.ripple-container');
-            Array.prototype.slice.call(els, 0, els.length - (els.length === 1 ? 0 : 1)).forEach(function (el) {
+        setTimeout(() => {
+            const els = document.querySelectorAll('.ripple-container');
+            Array.prototype.slice.call(els, 0, els.length - (els.length === 1 ? 0 : 1)).forEach((el) => {
                 if (el.parentNode) {
                     map.get('el').removeChild(el);
                 }
             });
         }, 850);
         map.get('el').removeEventListener('mouseup', this.clearRipple, false);
-    };
-    return Rippler;
-}());
-var map = new Map();
-var bind$2 = function (el) {
+    }
+}
+const map = new Map();
+const bind$2 = function (el) {
     map.set('el', el);
-    el.addEventListener('mousedown', function (event) {
+    el.addEventListener('mousedown', (event) => {
         new Rippler(event);
     });
 };
-var ripple = { bind: bind$2 };
+const ripple = { bind: bind$2 };
 
-var countries$1 = Countries;
-var VuePhoneInput = Vue.extend({
+const countries$1 = Countries;
+const VuePhoneInput = Vue.extend({
     // beforeMount (): void {
     //   if (!this.disableExternalLookup && process.env.VUE_APP_IP_API_URL) {
     //     fetch(process.env.VUE_APP_IP_API_URL)
@@ -23926,21 +23914,21 @@ var VuePhoneInput = Vue.extend({
         'country-list': CountryList
     },
     computed: {
-        asYouType: function () {
+        asYouType() {
             if (this.country) {
                 return new AsYouType$1(this.country);
             }
             return new AsYouType$1('US');
         },
-        isValid: function () {
+        isValid() {
             if ((this.asYouType !== undefined) && (typeof this.asYouType.getNumber === 'function')) {
                 return this.asYouType.getNumber() ? this.asYouType.getNumber().isValid() : false;
             }
             return false;
         },
-        phoneNumber: function () {
+        phoneNumber() {
             try {
-                var parsed = parsePhoneNumber$1(this.value, this.country.cca2);
+                const parsed = parsePhoneNumber$1(this.value, this.country.cca2);
                 console.log(parsed);
                 return parsed;
             }
@@ -23950,22 +23938,21 @@ var VuePhoneInput = Vue.extend({
             }
         }
     },
-    created: function () {
-        var _this = this;
-        this.$on('update:country', function (country) {
-            _this.country = country;
+    created() {
+        this.$on('update:country', (country) => {
+            this.country = country;
         });
-        this.$on('update:visible', function (visible) {
-            _this.menuOpen = visible;
+        this.$on('update:visible', (visible) => {
+            this.menuOpen = visible;
         });
     },
-    data: function () {
+    data() {
         return {
             menuOpen: false,
             country: {}
         };
     },
-    destroyed: function () {
+    destroyed() {
         this.$off('update:country');
         this.$off('update:visible');
     },
@@ -23976,32 +23963,32 @@ var VuePhoneInput = Vue.extend({
         allowedCountries: {
             type: Array,
             required: false,
-            "default": function () { return []; }
+            default: () => []
         },
         defaultCountry: {
             type: String,
             required: false,
-            "default": function () { return 'US'; }
+            default: () => 'US'
         },
         disableExternalLookup: {
             type: Boolean,
             required: false,
-            "default": true
+            default: true
         },
         hideFlags: {
             type: Boolean,
             required: false,
-            "default": false
+            default: false
         },
         name: {
             type: String,
             required: false,
-            "default": 'phone_number'
+            default: 'phone_number'
         },
         placeholder: {
             type: String,
             required: false,
-            "default": 'Enter Phone Number'
+            default: 'Enter Phone Number'
         },
         preferredCountries: {
             type: Array,
@@ -24012,28 +23999,27 @@ var VuePhoneInput = Vue.extend({
         }
     },
     render: function (h) {
-        var _this = this;
-        var self = this;
-        var asYouType = function () {
-            if (_this.country) {
-                return new AsYouType$1(_this.country.cca2);
+        const self = this;
+        const asYouType = () => {
+            if (this.country) {
+                return new AsYouType$1(this.country.cca2);
             }
             return new AsYouType$1('US');
         };
-        var inputGroup = [];
+        const inputGroup = [];
         inputGroup.push(h('transition', {
             attrs: {
                 name: 'arrow-indicator'
             }
         }, [
             h('span', {
-                "class": {
+                class: {
                     'arrow-indicator': true,
                     'open': this.menuOpen
                 },
                 on: {
-                    click: function () {
-                        _this.menuOpen = !_this.menuOpen;
+                    click: () => {
+                        this.menuOpen = !this.menuOpen;
                     }
                 }
             }, [
@@ -24053,15 +24039,15 @@ var VuePhoneInput = Vue.extend({
         ]));
         if (!this.hideFlags) {
             inputGroup.push(h('span', {
-                "class": {
+                class: {
                     'flag-indicator': true
                 },
                 domProps: {
                     innerHTML: this.country.flag
                 },
                 on: {
-                    click: function () {
-                        _this.menuOpen = !_this.menuOpen;
+                    click: () => {
+                        this.menuOpen = !this.menuOpen;
                     }
                 }
             }));
@@ -24071,11 +24057,10 @@ var VuePhoneInput = Vue.extend({
                 name: 'slide-fade'
             },
             props: {
-                countries: Object.keys(countries$1).filter(function (cca2) {
-                    return !_this.allowedCountries.length || _this.allowedCountries.map(function (allowed) { return allowed.toLowerCase(); }).includes(cca2.toLowerCase());
-                }).reduce(function (obj, cca2) {
-                    var _a;
-                    return Object.assign(obj, (_a = {}, _a[cca2] = countries$1[cca2], _a));
+                countries: Object.keys(countries$1).filter((cca2) => {
+                    return !this.allowedCountries.length || this.allowedCountries.map((allowed) => allowed.toLowerCase()).includes(cca2.toLowerCase());
+                }).reduce((obj, cca2) => {
+                    return Object.assign(obj, { [cca2]: countries$1[cca2] });
                 }, {}),
                 selected: this.country,
                 visible: self.menuOpen
@@ -24090,7 +24075,7 @@ var VuePhoneInput = Vue.extend({
                 placeholder: self.placeholder,
                 type: 'tel'
             },
-            "class": {
+            class: {
                 'is-valid': self.phoneNumber ? self.phoneNumber.isValid() : false
             },
             domProps: {
@@ -24099,7 +24084,7 @@ var VuePhoneInput = Vue.extend({
             on: {
                 input: function (event) {
                     if (event.target) {
-                        var value = event.target.value;
+                        const { value } = event.target;
                         self.$emit('input', Array.isArray(value) ? value.shift() : value);
                     }
                 }
@@ -24111,7 +24096,7 @@ var VuePhoneInput = Vue.extend({
             }
         }));
         return h('div', {
-            "class": {
+            class: {
                 'vue-phone-input__wrapper': true
             },
             directives: [
@@ -24135,10 +24120,9 @@ var VuePhoneInput = Vue.extend({
     watch: {
         menuOpen: {
             handler: function (isOpen) {
-                var _this = this;
                 if (!isOpen) {
-                    this.$nextTick(function () {
-                        _this.$refs.phoneNumberInput.focus();
+                    this.$nextTick(() => {
+                        this.$refs.phoneNumberInput.focus();
                     });
                 }
             }
@@ -24146,7 +24130,7 @@ var VuePhoneInput = Vue.extend({
     }
 });
 
-var VuePhoneInput$1 = function (v) {
+const VuePhoneInput$1 = (v) => {
     v.component('vue-phone-input', VuePhoneInput);
 };
 
