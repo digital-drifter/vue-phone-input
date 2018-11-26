@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <vue-phone-input name="phone_number"
-                         :allowed-countries="allowedCountries"
+
                          v-model="phoneNumber">
         </vue-phone-input>
     </div>

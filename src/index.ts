@@ -5,13 +5,9 @@ import './assets/styles/main.styl'
 
 const VuePhoneInput: PluginFunction<any> = (v: VueConstructor<Vue>): void => {
   Object.defineProperty(v.prototype, 'vpi', {
-      configurable: false,
-      enumerable: true,
-      get (): any {
-        return {
-          countries: Countries
-        }
-      }
+    value: {
+      countries: Countries
+    }
   })
   v.component('vue-phone-input', _VuePhoneInput)
 }
