@@ -21087,344 +21087,6 @@ var CountryList = Vue.extend({
     }
 });
 
-var Rippler = /** @class */ (function () {
-    function Rippler(event) {
-        this.transition = 450;
-        var style = getComputedStyle(map.get('el')).borderWidth;
-        if (style) {
-            this.targetBorder = parseInt(style.replace('px', ''), 10);
-        }
-        this.initGeometry(event.clientX, event.clientY);
-        this.initDomElements();
-        this.initRippleStyles();
-        this.initRippleContainerStyles();
-        if (map.get('el').style && map.get('el').style.position) {
-            this.storedTargetPosition = ((map.get('el').style.position).length > 0) ? map.get('el').style.position : getComputedStyle(map.get('el')).position;
-        }
-        if (this.storedTargetPosition && this.storedTargetPosition !== 'relative') {
-            this.storedTargetPosition = 'relative';
-        }
-        this.rippleContainer.appendChild(this.ripple);
-        map.get('el').appendChild(this.rippleContainer);
-        this.ripple.style.marginLeft = this.dx + "px";
-        this.ripple.style.marginTop = this.dy + "px";
-        this.updateRippleContainerStyles();
-        this.startRipple();
-        if (event.type === 'mousedown') {
-            map.get('el').addEventListener('mouseup', this.clearRipple, false);
-        }
-        else {
-            this.clearRipple();
-        }
-    }
-    Rippler.prototype.initGeometry = function (clientX, clientY) {
-        this.rect = map.get('el').getBoundingClientRect();
-        this.left = this.rect.left;
-        this.top = this.rect.top;
-        this.width = map.get('el').offsetWidth;
-        this.height = map.get('el').offsetHeight;
-        this.dx = clientX - this.left;
-        this.dy = clientY - this.top;
-        this.maxX = Math.max(this.dx, this.width - this.dx);
-        this.maxY = Math.max(this.dy, this.height - this.dy);
-        this.style = window.getComputedStyle(map.get('el'));
-        this.radius = Math.sqrt((this.maxX * this.maxX) + (this.maxY * this.maxY));
-        this.border = (this.targetBorder > 0) ? this.targetBorder : 0;
-    };
-    Rippler.prototype.initDomElements = function () {
-        this.ripple = document.createElement('div');
-        this.rippleContainer = document.createElement('div');
-        this.ripple.className = 'ripple';
-        this.rippleContainer.className = 'ripple-container';
-    };
-    Rippler.prototype.initRippleStyles = function () {
-        this.ripple.style.marginTop = '0px';
-        this.ripple.style.marginLeft = '0px';
-        this.ripple.style.width = '1px';
-        this.ripple.style.height = '1px';
-        this.ripple.style.transition = 'all ' + this.transition + 'ms cubic-bezier(0.4, 0, 0.2, 1)';
-        this.ripple.style.borderRadius = '50%';
-        this.ripple.style.pointerEvents = 'none';
-        this.ripple.style.position = 'relative';
-        this.ripple.style.zIndex = '9999';
-        this.ripple.style.backgroundColor = 'rgba(0, 0, 0, 0.35)';
-    };
-    Rippler.prototype.initRippleContainerStyles = function () {
-        this.rippleContainer.style.position = 'absolute';
-        this.rippleContainer.style.left = 0 - this.border + 'px';
-        this.rippleContainer.style.top = 0 - this.border + 'px';
-        this.rippleContainer.style.height = '0';
-        this.rippleContainer.style.width = '0';
-        this.rippleContainer.style.pointerEvents = 'none';
-        this.rippleContainer.style.overflow = 'hidden';
-        this.rippleContainer.style.display = 'flex';
-        this.rippleContainer.style.flexDirection = 'row';
-    };
-    Rippler.prototype.updateRippleContainerStyles = function () {
-        this.rippleContainer.style.width = this.width + "px";
-        this.rippleContainer.style.height = this.height + "px";
-        this.rippleContainer.style.borderTopLeftRadius = this.style.borderTopLeftRadius;
-        this.rippleContainer.style.borderTopRightRadius = this.style.borderTopRightRadius;
-        this.rippleContainer.style.borderBottomLeftRadius = this.style.borderBottomLeftRadius;
-        this.rippleContainer.style.borderBottomRightRadius = this.style.borderBottomRightRadius;
-        this.rippleContainer.style.direction = 'ltr';
-    };
-    Rippler.prototype.startRipple = function () {
-        var _this = this;
-        setTimeout(function () {
-            _this.ripple.style.width = _this.radius * 2 + 'px';
-            _this.ripple.style.height = _this.radius * 2 + 'px';
-            _this.ripple.style.marginLeft = _this.dx - _this.radius + 'px';
-            _this.ripple.style.marginTop = _this.dy - _this.radius + 'px';
-        }, 0);
-    };
-    Rippler.prototype.clearRipple = function () {
-        setTimeout(function () {
-            var el = document.querySelector('.ripple');
-            if (el) {
-                el.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-            }
-        }, 250);
-        setTimeout(function () {
-            var els = document.querySelectorAll('.ripple-container');
-            Array.prototype.slice.call(els, 0, els.length - (els.length === 1 ? 0 : 1)).forEach(function (el) {
-                if (el.parentNode) {
-                    map.get('el').removeChild(el);
-                }
-            });
-        }, 850);
-        map.get('el').removeEventListener('mouseup', this.clearRipple, false);
-    };
-    return Rippler;
-}());
-var map = new Map();
-var bind$2 = function (el) {
-    map.set('el', el);
-    el.addEventListener('mousedown', function (event) {
-        new Rippler(event);
-    });
-};
-var ripple = { bind: bind$2 };
-
-var VuePhoneInput = Vue.extend({
-    // beforeMount (): void {
-    //   if (!this.disableExternalLookup && process.env.VUE_APP_IP_API_URL) {
-    //     fetch(process.env.VUE_APP_IP_API_URL)
-    //       .then((response: Response) => response.json())
-    //       .then((data: LookupResponse) => {
-    //         this.country = data.countryCode
-    //       })
-    //   } else {
-    //     // const lang = getLanguage()
-    //   }
-    // },
-    components: {
-        'country-list': CountryList
-    },
-    computed: {
-        asYouType: function () {
-            return new AsYouType$1(this.country);
-        },
-        isValid: function () {
-            if ((this.asYouType !== undefined) && (typeof this.asYouType.getNumber === 'function')) {
-                return this.asYouType.getNumber() ? this.asYouType.getNumber().isValid() : false;
-            }
-            return false;
-        },
-        phoneNumber: function () {
-            try {
-                return parsePhoneNumber$1(this.value, this.country);
-            }
-            catch (e) {
-                return undefined;
-            }
-        }
-    },
-    created: function () {
-        var _this = this;
-        this.$on('update:country', function (country) {
-            _this.country = country;
-        });
-        this.$on('update:visible', function (visible) {
-            _this.menuOpen = visible;
-        });
-    },
-    data: function () {
-        return {
-            menuOpen: false,
-            country: {}
-        };
-    },
-    destroyed: function () {
-        this.$off('update:country');
-        this.$off('update:visible');
-    },
-    directives: {
-        'v-ripple': ripple
-    },
-    props: {
-        allowedCountries: {
-            type: Array,
-            required: false,
-            "default": function () { return []; }
-        },
-        defaultCountry: {
-            type: String,
-            required: false,
-            "default": function () { return 'US'; }
-        },
-        disableExternalLookup: {
-            type: Boolean,
-            required: false,
-            "default": true
-        },
-        hideFlags: {
-            type: Boolean,
-            required: false,
-            "default": false
-        },
-        name: {
-            type: String,
-            required: false,
-            "default": 'phone_number'
-        },
-        placeholder: {
-            type: String,
-            required: false,
-            "default": 'Enter Phone Number'
-        },
-        preferredCountries: {
-            type: Array,
-            required: false
-        },
-        value: {
-            type: String
-        }
-    },
-    render: function (h) {
-        var _this = this;
-        var self = this;
-        var asYouType = function () {
-            return new AsYouType$1(self.country);
-        };
-        var innerChildren = [];
-        innerChildren.push(h('transition', {
-            attrs: {
-                name: 'arrow-indicator'
-            }
-        }, [
-            h('span', {
-                "class": {
-                    'arrow-indicator': true,
-                    'open': this.menuOpen
-                },
-                on: {
-                    click: function () {
-                        _this.menuOpen = !_this.menuOpen;
-                    }
-                },
-                style: {
-                    flexGrow: 1,
-                    textAlign: 'center'
-                }
-            }, [
-                h('svg', {
-                    attrs: {
-                        width: '8px',
-                        height: '6px',
-                    }
-                }, [
-                    h('polygon', {
-                        attrs: {
-                            points: '0,0 8,3 0,6'
-                        }
-                    })
-                ])
-            ])
-        ]));
-        if (!this.hideFlags) {
-            innerChildren.push(h('span', {
-                domProps: {
-                    innerHTML: this.country.flag
-                },
-                on: {
-                    click: function () {
-                        _this.menuOpen = !_this.menuOpen;
-                    }
-                },
-                style: {
-                    flexGrow: 1,
-                    textAlign: 'center'
-                }
-            }));
-        }
-        innerChildren.push(h('country-list', {
-            attrs: {
-                name: 'slide-fade'
-            },
-            props: {
-                countries: Object.keys(this.vpi.countries).filter(function (cca2) {
-                    return !_this.allowedCountries.length || _this.allowedCountries.map(function (allowed) { return allowed.toLowerCase(); }).includes(cca2.toLowerCase());
-                }).reduce(function (obj, cca2) {
-                    var _a;
-                    return Object.assign(obj, (_a = {}, _a[cca2] = _this.vpi.countries[cca2], _a));
-                }, {}),
-                selected: this.country,
-                visible: self.menuOpen
-            },
-            style: {
-                display: self.menuOpen ? 'inline-block' : 'none'
-            }
-        }));
-        innerChildren.push(h('input', {
-            attrs: {
-                name: self.name,
-                placeholder: self.placeholder,
-                type: 'tel'
-            },
-            "class": {
-                'is-valid': self.phoneNumber ? self.phoneNumber.isValid() : false
-            },
-            domProps: {
-                value: asYouType().input(self.value)
-            },
-            on: {
-                input: function (event) {
-                    if (event.target) {
-                        var value = event.target.value;
-                        self.$emit('input', value);
-                    }
-                }
-            },
-            style: {
-                alignSelf: 'center',
-                flexGrow: 4
-            }
-        }));
-        return h('div', {
-            "class": {
-                'vue-phone-input__wrapper': true
-            },
-            directives: [
-                {
-                    arg: '',
-                    expression: '',
-                    modifiers: {},
-                    name: 'v-ripple',
-                    oldValue: undefined,
-                    value: undefined
-                }
-            ]
-        }, [
-            h('div', {
-                style: {
-                    display: 'flex'
-                }
-            }, innerChildren)
-        ]);
-    }
-});
-
 var AW = {
 	cca2: "AW",
 	flag: "🇦🇼",
@@ -24123,12 +23785,346 @@ var Countries = {
 	ZW: ZW
 };
 
-var VuePhoneInput$1 = function (v) {
-    Object.defineProperty(v.prototype, 'vpi', {
-        value: {
-            countries: Countries
+var Rippler = /** @class */ (function () {
+    function Rippler(event) {
+        this.transition = 450;
+        var style = getComputedStyle(map.get('el')).borderWidth;
+        if (style) {
+            this.targetBorder = parseInt(style.replace('px', ''), 10);
         }
+        this.initGeometry(event.clientX, event.clientY);
+        this.initDomElements();
+        this.initRippleStyles();
+        this.initRippleContainerStyles();
+        if (map.get('el').style && map.get('el').style.position) {
+            this.storedTargetPosition = ((map.get('el').style.position).length > 0) ? map.get('el').style.position : getComputedStyle(map.get('el')).position;
+        }
+        if (this.storedTargetPosition && this.storedTargetPosition !== 'relative') {
+            this.storedTargetPosition = 'relative';
+        }
+        this.rippleContainer.appendChild(this.ripple);
+        map.get('el').appendChild(this.rippleContainer);
+        this.ripple.style.marginLeft = this.dx + "px";
+        this.ripple.style.marginTop = this.dy + "px";
+        this.updateRippleContainerStyles();
+        this.startRipple();
+        if (event.type === 'mousedown') {
+            map.get('el').addEventListener('mouseup', this.clearRipple, false);
+        }
+        else {
+            this.clearRipple();
+        }
+    }
+    Rippler.prototype.initGeometry = function (clientX, clientY) {
+        this.rect = map.get('el').getBoundingClientRect();
+        this.left = this.rect.left;
+        this.top = this.rect.top;
+        this.width = map.get('el').offsetWidth;
+        this.height = map.get('el').offsetHeight;
+        this.dx = clientX - this.left;
+        this.dy = clientY - this.top;
+        this.maxX = Math.max(this.dx, this.width - this.dx);
+        this.maxY = Math.max(this.dy, this.height - this.dy);
+        this.style = window.getComputedStyle(map.get('el'));
+        this.radius = Math.sqrt((this.maxX * this.maxX) + (this.maxY * this.maxY));
+        this.border = (this.targetBorder > 0) ? this.targetBorder : 0;
+    };
+    Rippler.prototype.initDomElements = function () {
+        this.ripple = document.createElement('div');
+        this.rippleContainer = document.createElement('div');
+        this.ripple.className = 'ripple';
+        this.rippleContainer.className = 'ripple-container';
+    };
+    Rippler.prototype.initRippleStyles = function () {
+        this.ripple.style.marginTop = '0px';
+        this.ripple.style.marginLeft = '0px';
+        this.ripple.style.width = '1px';
+        this.ripple.style.height = '1px';
+        this.ripple.style.transition = 'all ' + this.transition + 'ms cubic-bezier(0.4, 0, 0.2, 1)';
+        this.ripple.style.borderRadius = '50%';
+        this.ripple.style.pointerEvents = 'none';
+        this.ripple.style.position = 'relative';
+        this.ripple.style.zIndex = '9999';
+        this.ripple.style.backgroundColor = 'rgba(0, 0, 0, 0.35)';
+    };
+    Rippler.prototype.initRippleContainerStyles = function () {
+        this.rippleContainer.style.position = 'absolute';
+        this.rippleContainer.style.left = 0 - this.border + 'px';
+        this.rippleContainer.style.top = 0 - this.border + 'px';
+        this.rippleContainer.style.height = '0';
+        this.rippleContainer.style.width = '0';
+        this.rippleContainer.style.pointerEvents = 'none';
+        this.rippleContainer.style.overflow = 'hidden';
+        this.rippleContainer.style.display = 'flex';
+        this.rippleContainer.style.flexDirection = 'row';
+    };
+    Rippler.prototype.updateRippleContainerStyles = function () {
+        this.rippleContainer.style.width = this.width + "px";
+        this.rippleContainer.style.height = this.height + "px";
+        this.rippleContainer.style.borderTopLeftRadius = this.style.borderTopLeftRadius;
+        this.rippleContainer.style.borderTopRightRadius = this.style.borderTopRightRadius;
+        this.rippleContainer.style.borderBottomLeftRadius = this.style.borderBottomLeftRadius;
+        this.rippleContainer.style.borderBottomRightRadius = this.style.borderBottomRightRadius;
+        this.rippleContainer.style.direction = 'ltr';
+    };
+    Rippler.prototype.startRipple = function () {
+        var _this = this;
+        setTimeout(function () {
+            _this.ripple.style.width = _this.radius * 2 + 'px';
+            _this.ripple.style.height = _this.radius * 2 + 'px';
+            _this.ripple.style.marginLeft = _this.dx - _this.radius + 'px';
+            _this.ripple.style.marginTop = _this.dy - _this.radius + 'px';
+        }, 0);
+    };
+    Rippler.prototype.clearRipple = function () {
+        setTimeout(function () {
+            var el = document.querySelector('.ripple');
+            if (el) {
+                el.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+            }
+        }, 250);
+        setTimeout(function () {
+            var els = document.querySelectorAll('.ripple-container');
+            Array.prototype.slice.call(els, 0, els.length - (els.length === 1 ? 0 : 1)).forEach(function (el) {
+                if (el.parentNode) {
+                    map.get('el').removeChild(el);
+                }
+            });
+        }, 850);
+        map.get('el').removeEventListener('mouseup', this.clearRipple, false);
+    };
+    return Rippler;
+}());
+var map = new Map();
+var bind$2 = function (el) {
+    map.set('el', el);
+    el.addEventListener('mousedown', function (event) {
+        new Rippler(event);
     });
+};
+var ripple = { bind: bind$2 };
+
+var countries$1 = Countries;
+var VuePhoneInput = Vue.extend({
+    // beforeMount (): void {
+    //   if (!this.disableExternalLookup && process.env.VUE_APP_IP_API_URL) {
+    //     fetch(process.env.VUE_APP_IP_API_URL)
+    //       .then((response: Response) => response.json())
+    //       .then((data: LookupResponse) => {
+    //         this.country = data.countryCode
+    //       })
+    //   } else {
+    //     // const lang = getLanguage()
+    //   }
+    // },
+    components: {
+        'country-list': CountryList
+    },
+    computed: {
+        asYouType: function () {
+            return new AsYouType$1(this.country);
+        },
+        isValid: function () {
+            if ((this.asYouType !== undefined) && (typeof this.asYouType.getNumber === 'function')) {
+                return this.asYouType.getNumber() ? this.asYouType.getNumber().isValid() : false;
+            }
+            return false;
+        },
+        phoneNumber: function () {
+            try {
+                return parsePhoneNumber$1(this.value, this.country);
+            }
+            catch (e) {
+                return undefined;
+            }
+        }
+    },
+    created: function () {
+        var _this = this;
+        this.$on('update:country', function (country) {
+            _this.country = country;
+        });
+        this.$on('update:visible', function (visible) {
+            _this.menuOpen = visible;
+        });
+    },
+    data: function () {
+        return {
+            menuOpen: false,
+            country: {}
+        };
+    },
+    destroyed: function () {
+        this.$off('update:country');
+        this.$off('update:visible');
+    },
+    directives: {
+        'v-ripple': ripple
+    },
+    props: {
+        allowedCountries: {
+            type: Array,
+            required: false,
+            "default": function () { return []; }
+        },
+        defaultCountry: {
+            type: String,
+            required: false,
+            "default": function () { return 'US'; }
+        },
+        disableExternalLookup: {
+            type: Boolean,
+            required: false,
+            "default": true
+        },
+        hideFlags: {
+            type: Boolean,
+            required: false,
+            "default": false
+        },
+        name: {
+            type: String,
+            required: false,
+            "default": 'phone_number'
+        },
+        placeholder: {
+            type: String,
+            required: false,
+            "default": 'Enter Phone Number'
+        },
+        preferredCountries: {
+            type: Array,
+            required: false
+        },
+        value: {
+            type: String
+        }
+    },
+    render: function (h) {
+        var _this = this;
+        var self = this;
+        var asYouType = function () {
+            return new AsYouType$1(self.country);
+        };
+        var innerChildren = [];
+        innerChildren.push(h('transition', {
+            attrs: {
+                name: 'arrow-indicator'
+            }
+        }, [
+            h('span', {
+                "class": {
+                    'arrow-indicator': true,
+                    'open': this.menuOpen
+                },
+                on: {
+                    click: function () {
+                        _this.menuOpen = !_this.menuOpen;
+                    }
+                },
+                style: {
+                    flexGrow: 1,
+                    textAlign: 'center'
+                }
+            }, [
+                h('svg', {
+                    attrs: {
+                        width: '8px',
+                        height: '6px',
+                    }
+                }, [
+                    h('polygon', {
+                        attrs: {
+                            points: '0,0 8,3 0,6'
+                        }
+                    })
+                ])
+            ])
+        ]));
+        if (!this.hideFlags) {
+            innerChildren.push(h('span', {
+                domProps: {
+                    innerHTML: this.country.flag
+                },
+                on: {
+                    click: function () {
+                        _this.menuOpen = !_this.menuOpen;
+                    }
+                },
+                style: {
+                    flexGrow: 1,
+                    textAlign: 'center'
+                }
+            }));
+        }
+        innerChildren.push(h('country-list', {
+            attrs: {
+                name: 'slide-fade'
+            },
+            props: {
+                countries: Object.keys(countries$1).filter(function (cca2) {
+                    return !_this.allowedCountries.length || _this.allowedCountries.map(function (allowed) { return allowed.toLowerCase(); }).includes(cca2.toLowerCase());
+                }).reduce(function (obj, cca2) {
+                    var _a;
+                    return Object.assign(obj, (_a = {}, _a[cca2] = countries$1[cca2], _a));
+                }, {}),
+                selected: this.country,
+                visible: self.menuOpen
+            },
+            style: {
+                display: self.menuOpen ? 'inline-block' : 'none'
+            }
+        }));
+        innerChildren.push(h('input', {
+            attrs: {
+                name: self.name,
+                placeholder: self.placeholder,
+                type: 'tel'
+            },
+            "class": {
+                'is-valid': self.phoneNumber ? self.phoneNumber.isValid() : false
+            },
+            domProps: {
+                value: asYouType().input(self.value)
+            },
+            on: {
+                input: function (event) {
+                    if (event.target) {
+                        var value = event.target.value;
+                        self.$emit('input', value);
+                    }
+                }
+            },
+            style: {
+                alignSelf: 'center',
+                flexGrow: 4
+            }
+        }));
+        return h('div', {
+            "class": {
+                'vue-phone-input__wrapper': true
+            },
+            directives: [
+                {
+                    arg: '',
+                    expression: '',
+                    modifiers: {},
+                    name: 'v-ripple',
+                    oldValue: undefined,
+                    value: undefined
+                }
+            ]
+        }, [
+            h('div', {
+                style: {
+                    display: 'flex'
+                }
+            }, innerChildren)
+        ]);
+    }
+});
+
+var VuePhoneInput$1 = function (v) {
     v.component('vue-phone-input', VuePhoneInput);
 };
 

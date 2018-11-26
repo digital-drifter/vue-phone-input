@@ -1,8 +1,11 @@
 import Vue, { CreateElement, VNode } from 'vue'
 import { AsYouType, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
 import CountryList from './country-list'
+import Countries from './assets/data/countries.json'
 import { CountryCatalog, CountryInfo } from '../types'
 import ripple from './directives/ripple'
+
+const countries: CountryCatalog = Countries
 
 const VuePhoneInput = Vue.extend({
   // beforeMount (): void {
@@ -164,10 +167,10 @@ const VuePhoneInput = Vue.extend({
         name: 'slide-fade'
       },
       props: {
-        countries: Object.keys(this.vpi.countries).filter((cca2: string) => {
+        countries: Object.keys(countries).filter((cca2: string) => {
           return !this.allowedCountries.length || this.allowedCountries.map((allowed: string) => allowed.toLowerCase()).includes(cca2.toLowerCase())
         }).reduce((obj: CountryCatalog, cca2: string) => {
-          return Object.assign(obj, { [cca2]: this.vpi.countries[cca2] })
+          return Object.assign(obj, { [cca2]: countries[cca2] })
         }, {} as CountryCatalog),
         selected: this.country,
         visible: self.menuOpen
