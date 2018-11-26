@@ -1,7 +1,6 @@
 import Vue, { CreateElement, VNode } from 'vue'
 import { AsYouType, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
 import CountryList from './country-list'
-import Countries from './assets/data/countries.json'
 import { CountryCatalog, CountryInfo } from '../types'
 import ripple from './directives/ripple'
 
@@ -23,9 +22,6 @@ const VuePhoneInput = Vue.extend({
   computed: {
     asYouType (): AsYouType {
       return new AsYouType(this.country as any)
-    },
-    countries () {
-      return Countries as { [k: string]: CountryInfo }
     },
     isValid (): boolean {
       if ((this.asYouType !== undefined) && (typeof (this as any).asYouType.getNumber === 'function')) {
@@ -65,12 +61,14 @@ const VuePhoneInput = Vue.extend({
   },
   props: {
     allowedCountries: {
-      type: [ Array, Object ],
-      required: false
+      type: Array,
+      required: false,
+      default: () => []
     },
     defaultCountry: {
-      type: [ Object, String ],
-      required: false
+      type: String,
+      required: false,
+      default: () => 'US'
     },
     disableExternalLookup: {
       type: Boolean,
@@ -93,7 +91,7 @@ const VuePhoneInput = Vue.extend({
       default: 'Enter Phone Number'
     },
     preferredCountries: {
-      type: [ Array, Object ],
+      type: Array,
       required: false
     },
     value: {
@@ -131,13 +129,13 @@ const VuePhoneInput = Vue.extend({
       }, [
         h('svg', {
           attrs: {
-            width: '8px', // this.menuOpen ? '6px' : '8px',
-            height: '6px', // this.menuOpen ? '8px' : '6px'
+            width: '8px',
+            height: '6px',
           }
         }, [
           h('polygon', {
             attrs: {
-              points: '0,0 8,3 0,6' // this.menuOpen ? '0,0 6,0 3,8' : '0,0 8,3 0,6'
+              points: '0,0 8,3 0,6'
             }
           })
         ])
@@ -161,27 +159,15 @@ const VuePhoneInput = Vue.extend({
       }))
     }
 
-    // innerChildren.push(h('div', {
-    //   domProps: {
-    //     innerHTML: `+${ this.country.callingCode }`
-    //   },
-    //   style: {
-    //     flexGrow: 1
-    //   }
-    // }))
-
     innerChildren.push(h('country-list', {
       attrs: {
         name: 'slide-fade'
       },
       props: {
-        countries: Object.keys(Countries).reduce((obj: CountryCatalog, cca2: string) => {
-          if (Array.from(this.allowedCountries) && (this.allowedCountries.length > 0)) {
-            const allowed = this.allowedCountries.map((country: string) => country.toLowerCase()).includes(cca2.toLowerCase())
-
-            return allowed ? Object.assign(obj, { [cca2]: (Countries as any)[cca2] }) : obj
-          }
-          return obj
+        countries: Object.keys(this.vpi.countries).filter((cca2: string) => {
+          return !this.allowedCountries.length || this.allowedCountries.map((allowed: string) => allowed.toLowerCase()).includes(cca2.toLowerCase())
+        }).reduce((obj: CountryCatalog, cca2: string) => {
+          return Object.assign(obj, { [cca2]: this.vpi.countries[cca2] })
         }, {} as CountryCatalog),
         selected: this.country,
         visible: self.menuOpen
@@ -212,6 +198,7 @@ const VuePhoneInput = Vue.extend({
         }
       },
       style: {
+        alignSelf: 'center',
         flexGrow: 4
       }
     }))

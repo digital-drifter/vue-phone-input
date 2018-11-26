@@ -53,3 +53,11 @@ export interface RippleProps {
   event: string
   transition: number
 }
+
+export declare class VuePhoneInput {
+  public countries (): CountryCatalog
+}
+
+declare const vpi: VuePhoneInput
+
+export default vpi

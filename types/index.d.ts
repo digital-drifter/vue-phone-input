@@ -1,3 +1,7 @@
+import {default as _vpi } from './vue-phone-input'
+
+export const vdi: typeof _vpi
+
 export {
   CountryCatalog,
   CountryInfo,
