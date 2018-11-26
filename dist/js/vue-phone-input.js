@@ -24888,8 +24888,8 @@
               }
               return new AsYouType$1('US');
           };
-          var innerChildren = [];
-          innerChildren.push(h('transition', {
+          var inputGroup = [];
+          inputGroup.push(h('transition', {
               attrs: {
                   name: 'arrow-indicator'
               }
@@ -24920,7 +24920,7 @@
               ])
           ]));
           if (!this.hideFlags) {
-              innerChildren.push(h('span', {
+              inputGroup.push(h('span', {
                   "class": {
                       'flag-indicator': true
                   },
@@ -24934,7 +24934,7 @@
                   }
               }));
           }
-          innerChildren.push(h('country-list', {
+          inputGroup.push(h('country-list', {
               attrs: {
                   name: 'slide-fade'
               },
@@ -24952,7 +24952,7 @@
                   display: self.menuOpen ? 'inline-block' : 'none'
               }
           }));
-          innerChildren.push(h('input', {
+          inputGroup.push(h('input', {
               attrs: {
                   name: self.name,
                   placeholder: self.placeholder,
@@ -24997,7 +24997,7 @@
                   style: {
                       display: 'flex'
                   }
-              }, innerChildren)
+              }, inputGroup)
           ]);
       },
       watch: {

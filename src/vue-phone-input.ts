@@ -119,9 +119,9 @@ const VuePhoneInput = Vue.extend({
       return new AsYouType('US')
     }
 
-    const innerChildren: VNode[] = []
+    const inputGroup: VNode[] = []
 
-    innerChildren.push(h('transition', {
+    inputGroup.push(h('transition', {
       attrs: {
         name: 'arrow-indicator'
       }
@@ -153,7 +153,7 @@ const VuePhoneInput = Vue.extend({
     ]))
 
     if (!this.hideFlags) {
-      innerChildren.push(h('span', {
+      inputGroup.push(h('span', {
         class: {
           'flag-indicator': true
         },
@@ -168,7 +168,7 @@ const VuePhoneInput = Vue.extend({
       }))
     }
 
-    innerChildren.push(h('country-list', {
+    inputGroup.push(h('country-list', {
       attrs: {
         name: 'slide-fade'
       },
@@ -186,7 +186,7 @@ const VuePhoneInput = Vue.extend({
       }
     }))
 
-    innerChildren.push(h('input', {
+    inputGroup.push(h('input', {
       attrs: {
         name: self.name,
         placeholder: self.placeholder,
@@ -232,7 +232,7 @@ const VuePhoneInput = Vue.extend({
         style: {
           display: 'flex'
         }
-      }, innerChildren)
+      }, inputGroup)
     ])
   },
   watch: {

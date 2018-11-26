@@ -24022,8 +24022,8 @@ var VuePhoneInput = Vue.extend({
             }
             return new AsYouType$1('US');
         };
-        var innerChildren = [];
-        innerChildren.push(h('transition', {
+        var inputGroup = [];
+        inputGroup.push(h('transition', {
             attrs: {
                 name: 'arrow-indicator'
             }
@@ -24054,7 +24054,7 @@ var VuePhoneInput = Vue.extend({
             ])
         ]));
         if (!this.hideFlags) {
-            innerChildren.push(h('span', {
+            inputGroup.push(h('span', {
                 "class": {
                     'flag-indicator': true
                 },
@@ -24068,7 +24068,7 @@ var VuePhoneInput = Vue.extend({
                 }
             }));
         }
-        innerChildren.push(h('country-list', {
+        inputGroup.push(h('country-list', {
             attrs: {
                 name: 'slide-fade'
             },
@@ -24086,7 +24086,7 @@ var VuePhoneInput = Vue.extend({
                 display: self.menuOpen ? 'inline-block' : 'none'
             }
         }));
-        innerChildren.push(h('input', {
+        inputGroup.push(h('input', {
             attrs: {
                 name: self.name,
                 placeholder: self.placeholder,
@@ -24131,7 +24131,7 @@ var VuePhoneInput = Vue.extend({
                 style: {
                     display: 'flex'
                 }
-            }, innerChildren)
+            }, inputGroup)
         ]);
     },
     watch: {

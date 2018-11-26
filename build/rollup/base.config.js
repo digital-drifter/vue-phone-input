@@ -16,12 +16,18 @@ const configs = [
   {
     file: resolve('dist/js/vue-phone-input.js'),
     format: 'umd',
-    env: process.env.NODE_ENV || '\'development\''
+    env: process.env.NODE_ENV || '\'development\'',
+    globals: {
+      'vue': 'Vue'
+    }
   },
   {
     file: resolve('dist/js/vue-phone-input.min.js'),
     format: 'umd',
-    env: process.env.NODE_ENV || '\'production\''
+    env: process.env.NODE_ENV || '\'production\'',
+    globals: {
+      'vue': 'Vue'
+    }
   },
   {
     file: resolve('dist/js/vue-phone-input.cjs.js'),
