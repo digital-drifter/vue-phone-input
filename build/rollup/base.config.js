@@ -16,18 +16,12 @@ const configs = [
   {
     file: resolve('dist/js/vue-phone-input.js'),
     format: 'umd',
-    env: process.env.NODE_ENV || '\'development\'',
-    globals: {
-      'vue': 'Vue'
-    }
+    env: process.env.NODE_ENV || '\'development\''
   },
   {
     file: resolve('dist/js/vue-phone-input.min.js'),
     format: 'umd',
-    env: process.env.NODE_ENV || '\'production\'',
-    globals: {
-      'vue': 'Vue'
-    }
+    env: process.env.NODE_ENV || '\'production\''
   },
   {
     file: resolve('dist/js/vue-phone-input.cjs.js'),
@@ -88,7 +82,10 @@ const configs = [
 
   return {
     cache: false,
-    external: id => id.includes('vue'),
+    external: ['vue'],
+    globals: {
+      'vue': 'Vue'
+    },
     input: resolve('src/index.ts'),
     plugins,
     output: {
