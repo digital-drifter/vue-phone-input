@@ -62,23 +62,19 @@
     "zlib": "^1.0.5"
   },
   "files": [
-    "src",
-    "dist/*.js",
+    "dist/js/*.js",
     "types/*.d.ts"
   ],
   "jsdelivr": "dist/vue-phone-input.js",
   "license": "MIT",
-  "main": "dist/vue-phone-input.cjs.js",
+  "main": "dist/vue-phone-input.js",
   "module": "dist/vue-phone-input.esm.js",
   "peerDependencies": {
     "rollup": "^0.67.3",
     "typescript": "^3.1.6"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/digital-drifter/vue-phone-input.git"
-  },
+  "repository": "https://github.com/digital-drifter/vue-phone-input",
   "sideEffects": false,
   "typings": "types/index.d.ts",
-  "unpkg": "dist/vue-phone-input.umd.js"
+  "unpkg": "dist/vue-phone-input.js"
 }
