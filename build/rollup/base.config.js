@@ -83,12 +83,12 @@ const configs = [
   return {
     cache: false,
     external: ['vue'],
-    globals: {
-      'vue': 'Vue'
-    },
     input: resolve('src/index.ts'),
     plugins,
     output: {
+      globals: {
+        'vue': 'Vue'
+      },
       interop: false,
       file: opts.file,
       format: opts.format,
