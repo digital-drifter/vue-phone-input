@@ -33,15 +33,13 @@ const configs = [
     format: 'es',
     env: process.env.NODE_ENV || '\'production\''
   }
-].map((opts) => ({
-  cache: false,
-  input: resolve('src/index.ts'),
-  plugins: [
+].map((opts) => {
+  const plugins = [
     replace({
-      replaces: {
-        'process.env.NODE_ENV': opts.env
-      }
-    }),
+    replaces: {
+      'process.env.NODE_ENV': opts.env
+    }
+  }),
     node({
       extensions: [ '.js', '.json', '.ts' ]
     }),
@@ -56,29 +54,42 @@ const configs = [
     postcss({
       minimize: true,
       sourceMap: true,
-      extensions: ['.css', '.scss', '.sass', '.styl', '.less'],
+      extensions: [ '.css', '.scss', '.sass', '.styl', '.less' ],
       extract: resolve('dist/css/vue-phone-input.css'),
       plugins: [
         autoprefixer()
       ]
     }),
-    typescript(),
-    commonjs(),
-    autoExternal(),
-    terser()
-  ],
-  output: {
-    interop: false,
-    file: opts.file,
-    format: opts.format,
-    name: 'VuePhoneInput'
-  },
-  onwarn: (warning) => {
-    if (warning.code !== 'CIRCULAR_DEPENDENCY') {
-      console.error(`(!) ${ warning.message }`)
+    typescript()
+  ]
+
+  // if (opts.format === 'umd') {
+    plugins.push(commonjs())
+  // }
+
+  if (opts.env === 'production') {
+    plugins.push(terser())
+  }
+
+  plugins.push(autoExternal())
+
+  return {
+    cache: false,
+    input: resolve('src/index.ts'),
+    plugins,
+    output: {
+      interop: false,
+      file: opts.file,
+      format: opts.format,
+      name: 'VuePhoneInput'
+    },
+    onwarn: (warning) => {
+      if (warning.code !== 'CIRCULAR_DEPENDENCY') {
+        console.error(`(!) ${ warning.message }`)
+      }
     }
   }
-}))
+})
 
 module.exports = configs
 
