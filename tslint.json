@@ -6,7 +6,7 @@
   "linterOptions": {
     "exclude": [
       "node_modules/**",
-      "src/assets/countries.json"
+      "src/assets/data/countries.json"
     ]
   },
   "rules": {

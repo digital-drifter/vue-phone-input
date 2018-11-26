@@ -1,21 +1,5 @@
 import { VNodeDirective } from 'vue'
-
-interface EventHandler {
-  event: string
-  handler: (event: Event) => void
-}
-
-interface DirectiveInstance {
-  el: HTMLElement
-  eventHandlers: EventHandler[]
-}
-
-type EventHandlerArgs = {
-  el: Element
-  event: any
-  handler: (event: string, el: Element) => void
-  middleware: any
-}
+import { DirectiveInstance, EventHandler, EventHandlerArgs } from '../../types'
 
 const isTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints > 0
 const eventNames = isTouch ? ['touchstart', 'click'] : ['click']

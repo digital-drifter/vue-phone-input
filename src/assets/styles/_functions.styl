@@ -1,16 +1,22 @@
-font-size(size = 12)
-  font-size unit(size, px)
+font-size(size = 1, uom = rem)
+  font-size unit(size, uom)
 
 flex(direction = row, inline = false)
   display inline ? inline-flex : flex
   flex-direction direction
 
 component(h = 24, w = 335, c = rgba(178,223,219,.3))
+  position relative
   background-color c
   height unit(h, px)
   min-height unit(h, px)
   width unit(w, px)
   min-width unit(w, px)
+
+elevate(elevation = 15)
+  box-shadow 0 unit(ceil(elevation / 2), px) unit(ceil(elevation / 2) + 1, px) unit(abs(elevation / 3) * -1, px) rgba(0,0,0,0.2),
+             0 unit(elevation, px) unit(elevation + 7, px) unit(ceil(elevation / 8), px) rgba(0,0,0,0.2),
+             0 unit((elevation / 3) + 1, px) unit((elevation * 2) - 2, px) unit(elevation / 3, px) rgba(0,0,0,0.12)
 
 colorize(el, background = false)
   attribute = !background ? 'color' : 'background-color'

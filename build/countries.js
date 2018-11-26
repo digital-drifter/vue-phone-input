@@ -6,7 +6,7 @@ const LibphonenumberJS = require('libphonenumber-js')
 const countries = WorldCountries.filter(({ callingCode }) => Array.isArray(callingCode) && callingCode.length > 0)
   .reduce((obj, { cca2, cca3, name: { common, official, native }, flag, callingCode }) => {
     const country = Object.assign(obj, {
-      [cca2]: { flag, name: { common, official } }
+      [cca2]: { cca2, flag, name: { common, official } }
     })
 
     try {
@@ -28,7 +28,7 @@ const countries = WorldCountries.filter(({ callingCode }) => Array.isArray(calli
     return country
   }, {})
 
-const filename = path.resolve(__dirname, '../src/assets/countries.json')
+const filename = path.resolve(__dirname, '../src/assets/data/countries.json')
 
 if (fs.existsSync(filename)) {
   fs.unlinkSync(filename)

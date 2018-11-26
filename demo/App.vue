@@ -1,6 +1,9 @@
 <template>
     <div id="app">
-        <vue-phone-input name="phone_number" v-model="phoneNumber"></vue-phone-input>
+        <vue-phone-input name="phone_number"
+                         :allowed-countries="allowedCountries"
+                         v-model="phoneNumber">
+        </vue-phone-input>
     </div>
 </template>
 
@@ -10,5 +13,7 @@
   @Component
   export default class App extends Vue {
     public phoneNumber: string = ''
+
+    public allowedCountries: string[] = ['us', 'jp', 'gb', 'fr', 'sa']
   }
 </script>

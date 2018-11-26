@@ -1,18 +1,6 @@
 import Vue, { CreateElement, VNode } from 'vue'
-import clickOutside from './click-outside'
-import Countries from './assets/countries.json'
-
-type ListItemGenerator = (h: CreateElement, cca2: string, country: CountryInfo) => VNode
-
-interface CountryInfo {
-  name: {
-    common: string
-    official: string
-    native?: string
-  }
-  flag: string
-  callingCode?: string | number
-}
+import clickOutside from './directives/click-outside'
+import { CountryInfo, ListItemGenerator } from '../types'
 
 const createListItem: ListItemGenerator = function (h: CreateElement, cca2: string, country: CountryInfo): VNode {
   const listItem = h('li', {
@@ -23,9 +11,13 @@ const createListItem: ListItemGenerator = function (h: CreateElement, cca2: stri
     on: {
       click: (): void => {
         if (listItem.context) {
-          listItem.context.$parent.$emit('update:selectedCountry', listItem.key)
+          listItem.context.$parent.$emit('update:country', country)
+          listItem.context.$parent.$emit('update:visible', false)
         }
       }
+    },
+    style: {
+      borderBottom: '1px solid rgba(96,125,139,.2)'
     }
   }, [
     h('span', {
@@ -36,13 +28,20 @@ const createListItem: ListItemGenerator = function (h: CreateElement, cca2: stri
         innerHTML: country.flag
       }
     }),
-    h('span', [
+    h('span', {
+      style: {
+        flexDirection: 'column'
+      }
+    }, [
       h('span', {
         domProps: {
-          innerHTML: `${country.name.common} (+${ country.callingCode })`
+          innerHTML: `${ country.name.common } (+${ country.callingCode })`
         },
         style: {
-          color: 'rgba(96,125,139,.6)'
+          color: 'rgba(96,125,139,.6)',
+          flexDirection: 'row',
+          alignItems: 'center',
+          flexGrow: 1
         }
       }),
       h('span', {
@@ -50,13 +49,16 @@ const createListItem: ListItemGenerator = function (h: CreateElement, cca2: stri
           innerHTML: country.name.native
         },
         style: {
-          color: 'rgba(96,125,139,.6)'
+          color: 'rgba(96,125,139,.6)',
+          flexDirection: 'row',
+          alignItems: 'center',
+          flexGrow: 1
         }
       })
     ])
   ])
 
-  if (listItem.context && listItem.data && (listItem.key === (listItem.context as any).selected)) {
+  if (listItem.context && listItem.data && (listItem.key === (listItem.context as any).selected.cca2)) {
     Object.assign(listItem.data.class, { active: true })
   }
 
@@ -64,6 +66,11 @@ const createListItem: ListItemGenerator = function (h: CreateElement, cca2: stri
 }
 
 const CountryList = Vue.extend({
+  created (): void {
+    if (this.selected) {
+      this.filter = typeof this.selected.name !== 'undefined' ? this.selected.name.common : ''
+    }
+  },
   data () {
     return {
       filter: ''
@@ -79,7 +86,7 @@ const CountryList = Vue.extend({
       }
     }
   },
-  props: [ 'selected', 'visible' ],
+  props: [ 'countries', 'selected', 'visible' ],
   render: function (h: CreateElement): VNode {
     return h('div', {
       class: {
@@ -96,26 +103,50 @@ const CountryList = Vue.extend({
         }
       ]
     }, [
-      h('input', {
-        attrs: {
-          maxlength: 2,
-          type: 'text'
-        },
-        domProps: {
-          value: this.selected
-        },
-        key: 'list-input',
-        on: {
-          input: (event: InputEvent): void => {
-            if (event.target) {
-              const { value } = event.target as HTMLInputElement
-              this.$nextTick(() => {
-                this.filter = value
-              })
-            }
+      h('span', {
+          style: {
+            display: 'flex'
           }
-        }
-      }),
+        },
+        [
+          h('input', {
+            attrs: {
+              placeholder: this.filter.length === 0 ? 'Search Countries...' : '',
+              type: 'text'
+            },
+            domProps: {
+              value: this.filter
+            },
+            key: 'list-input',
+            on: {
+              input: (event: InputEvent): void => {
+                if (event.target) {
+                  const { value } = event.target as HTMLInputElement
+                  this.$nextTick(() => {
+                    this.filter = value
+                  })
+                }
+              }
+            },
+            style: {
+              flexGrow: 5
+            }
+          }),
+          h('span', {
+            class: {
+              clearable: true
+            },
+            domProps: {
+              innerHTML: 'X'
+            },
+            on: {
+              click: (): void => {
+                this.$parent.$emit('update:country', {})
+                this.filter = ''
+              }
+            }
+          })
+        ]),
       h('transition-group', {
         attrs: {
           name: 'list'
@@ -123,21 +154,21 @@ const CountryList = Vue.extend({
         key: 'list-items',
         ref: 'list',
         tag: 'ul'
-      }, Object.keys(Countries as { [k: string]: CountryInfo })
-        .filter((cca2: string) => {
-          const country = (Countries as { [k: string]: CountryInfo })[cca2]
+      }, Object.keys(this.countries).filter((cca2: string) => {
+        const country = this.countries[cca2]
+        const filter: string = this.filter.toLowerCase()
 
-          switch (true) {
-            case !this.filter.length:
-            case cca2.includes(this.filter):
-            case country.name.common.includes(this.filter):
-            case country.name.official.includes(this.filter):
-              return true
-            default:
-              return false
-          }
-        })
-        .reduce((list: VNode[], cca2: string) => [ ...list, createListItem(h, cca2, (Countries as { [k: string]: CountryInfo })[cca2]) ], []))
+        switch (true) {
+          case !filter.length:
+          case cca2.toLowerCase().includes(filter):
+          case country.name.common.toLowerCase().includes(filter):
+          case country.name.official.toLowerCase().includes(filter):
+            return true
+          default:
+            return false
+        }
+      })
+        .reduce((list: VNode[], cca2: string) => [ ...list, createListItem(h, cca2, this.countries[cca2]) ], []))
     ])
   },
   watch: {
@@ -148,6 +179,10 @@ const CountryList = Vue.extend({
           const activeElement = document.querySelector('li.active') as HTMLElement
 
           if (activeElement) {
+            if (this.selected) {
+              this.filter = this.selected.name.common
+            }
+
             const { $el } = this.$refs.list as Vue
 
             $el.scrollTo(0, activeElement.offsetTop)

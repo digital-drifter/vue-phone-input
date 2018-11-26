@@ -1,0 +1,31 @@
+// country dropdown list filter
+.list-enter-active, .list-leave-active, .list-move
+  transition all .5s cubic-bezier(.55, 0, .1, 1)
+
+.list-enter
+  opacity 0
+  transform scale(0)
+
+.list-leave-active
+  opacity 0
+  position absolute
+  transform scale(0)
+
+// unused
+.slide-fade-enter-active, .slide-fade-leave-active, .slide-fade-move
+  transition all .3s ease
+
+.slide-fade-enter
+  transition all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0)
+
+.slide-fade-active
+  transform translateX(10px)
+  opacity 0
+
+// drop down arrow indicator
+.arrow-indicator
+  transition transform  200ms linear
+  transform rotate(0deg)
+
+  &.open
+    transform rotate(90deg)

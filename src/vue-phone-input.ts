@@ -1,42 +1,22 @@
 import Vue, { CreateElement, VNode } from 'vue'
-import { AsYouType, CountryCode, getCountryCallingCode, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
-// import * as MetaData from 'libphonenumber-js/metadata.full.json'
-// import * as CountryData from './assets/countries.json'
+import { AsYouType, parsePhoneNumber, PhoneNumber } from 'libphonenumber-js'
 import CountryList from './country-list'
-import { getLanguage } from './utils'
-
-// type CountryCallingCodes = { [k: string]: number }
-
-interface LookupResponse {
-  as: string
-  city: string
-  country: string
-  countryCode: string
-  isp: string
-  lat: number
-  lon: number
-  org: string
-  query: string
-  region: string
-  regionName: string
-  status: string
-  timezone: string
-  zip: string
-}
+import Countries from './assets/data/countries.json'
+import { CountryCatalog, CountryInfo } from '../types'
+import ripple from './directives/ripple'
 
 const VuePhoneInput = Vue.extend({
-  beforeMount (): void {
-    if (!this.disableExternalLookup && process.env.VUE_APP_IP_API_URL) {
-      fetch(process.env.VUE_APP_IP_API_URL)
-        .then((response: Response) => response.json())
-        .then((data: LookupResponse) => {
-          this.selectedCountry = data.countryCode
-        })
-    } else {
-      const lang = getLanguage()
-      console.log(lang)
-    }
-  },
+  // beforeMount (): void {
+  //   if (!this.disableExternalLookup && process.env.VUE_APP_IP_API_URL) {
+  //     fetch(process.env.VUE_APP_IP_API_URL)
+  //       .then((response: Response) => response.json())
+  //       .then((data: LookupResponse) => {
+  //         this.country = data.countryCode
+  //       })
+  //   } else {
+  //     // const lang = getLanguage()
+  //   }
+  // },
   components: {
     'country-list': CountryList
   },
@@ -44,16 +24,8 @@ const VuePhoneInput = Vue.extend({
     asYouType (): AsYouType {
       return new AsYouType(this.country as any)
     },
-    country: {
-      get (): CountryCode {
-        if (!(this as any).selectedCountry && typeof (this as any).defaultCountry !== 'undefined') {
-          (this as any).selectedCountry = (this as any).defaultCountry as any
-        }
-        return (this as any).selectedCountry
-      },
-      set (value: CountryCode) {
-        (this as any).selectedCountry = value
-      }
+    countries () {
+      return Countries as { [k: string]: CountryInfo }
     },
     isValid (): boolean {
       if ((this.asYouType !== undefined) && (typeof (this as any).asYouType.getNumber === 'function')) {
@@ -64,15 +36,15 @@ const VuePhoneInput = Vue.extend({
     },
     phoneNumber (): PhoneNumber | undefined {
       try {
-        return parsePhoneNumber((this as any).value, (this as any).country)
+        return parsePhoneNumber(this.value, this.country)
       } catch (e) {
         return undefined
       }
     }
-  },
+  } as any,
   created (): void {
-    this.$on('update:selectedCountry', (country: string) => {
-      this.selectedCountry = country
+    this.$on('update:country', (country: CountryInfo) => {
+      this.country = country
     })
     this.$on('update:visible', (visible: boolean) => {
       this.menuOpen = visible
@@ -81,12 +53,15 @@ const VuePhoneInput = Vue.extend({
   data () {
     return {
       menuOpen: false,
-      selectedCountry: 'US' as CountryCode
+      country: {} as CountryInfo
     }
   },
   destroyed (): void {
-    this.$off('update:selectedCountry')
+    this.$off('update:country')
     this.$off('update:visible')
+  },
+  directives: {
+    'v-ripple': ripple
   },
   props: {
     allowedCountries: {
@@ -134,11 +109,15 @@ const VuePhoneInput = Vue.extend({
 
     const innerChildren: VNode[] = []
 
-    if (!this.hideFlags) {
-      innerChildren.push(h('span', {
+    innerChildren.push(h('transition', {
+      attrs: {
+        name: 'arrow-indicator'
+      }
+    }, [
+      h('span', {
         class: {
-          'flag-icon': true,
-          [`flag-icon-${ this.country.toLowerCase() }`]: true
+          'arrow-indicator': true,
+          'open': this.menuOpen
         },
         on: {
           click: (): void => {
@@ -146,29 +125,64 @@ const VuePhoneInput = Vue.extend({
           }
         },
         style: {
-          width: '32px'
+          flexGrow: 1,
+          textAlign: 'center'
+        }
+      }, [
+        h('svg', {
+          attrs: {
+            width: '8px', // this.menuOpen ? '6px' : '8px',
+            height: '6px', // this.menuOpen ? '8px' : '6px'
+          }
+        }, [
+          h('polygon', {
+            attrs: {
+              points: '0,0 8,3 0,6' // this.menuOpen ? '0,0 6,0 3,8' : '0,0 8,3 0,6'
+            }
+          })
+        ])
+      ])
+    ]))
+
+    if (!this.hideFlags) {
+      innerChildren.push(h('span', {
+        domProps: {
+          innerHTML: this.country.flag
+        },
+        on: {
+          click: (): void => {
+            this.menuOpen = !this.menuOpen
+          }
+        },
+        style: {
+          flexGrow: 1,
+          textAlign: 'center'
         }
       }))
     }
 
-    innerChildren.push(h('div', {
-      domProps: {
-        innerHTML: `+${ getCountryCallingCode(this.country) }`
-      }
-    }))
+    // innerChildren.push(h('div', {
+    //   domProps: {
+    //     innerHTML: `+${ this.country.callingCode }`
+    //   },
+    //   style: {
+    //     flexGrow: 1
+    //   }
+    // }))
 
     innerChildren.push(h('country-list', {
       attrs: {
         name: 'slide-fade'
       },
       props: {
-        // countries: Object.keys(MetaData.country_calling_codes).reduce((codes: CountryCallingCodes, code: string) => {
-        //   const countryCodes: string[] = (MetaData.country_calling_codes as any)[code]
-        //
-        //   countryCodes.forEach((country: string) => Object.assign(codes, { [country]: code }))
-        //
-        //   return codes
-        // }, {} as CountryCallingCodes),
+        countries: Object.keys(Countries).reduce((obj: CountryCatalog, cca2: string) => {
+          if (Array.from(this.allowedCountries) && (this.allowedCountries.length > 0)) {
+            const allowed = this.allowedCountries.map((country: string) => country.toLowerCase()).includes(cca2.toLowerCase())
+
+            return allowed ? Object.assign(obj, { [cca2]: (Countries as any)[cca2] }) : obj
+          }
+          return obj
+        }, {} as CountryCatalog),
         selected: this.country,
         visible: self.menuOpen
       },
@@ -196,17 +210,30 @@ const VuePhoneInput = Vue.extend({
             self.$emit('input', value)
           }
         }
+      },
+      style: {
+        flexGrow: 4
       }
     }))
 
     return h('div', {
       class: {
         'vue-phone-input__wrapper': true
-      }
+      },
+      directives: [
+        {
+          arg: '',
+          expression: '',
+          modifiers: {},
+          name: 'v-ripple',
+          oldValue: undefined,
+          value: undefined
+        }
+      ]
     }, [
       h('div', {
         style: {
-          display: 'inline-flex'
+          display: 'flex'
         }
       }, innerChildren)
     ])
