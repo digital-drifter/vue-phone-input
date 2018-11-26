@@ -79,7 +79,12 @@ const configs = [
     plugins.push(terser())
   }
 
-  plugins.push(autoExternal())
+  plugins.push(autoExternal({
+    builtins: false,
+    dependencies: true,
+    peerDependencies: false,
+    packagePath: resolve('package.json')
+  }))
 
   return {
     cache: false,
